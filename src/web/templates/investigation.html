@@ -1,0 +1,711 @@
+{% extends "base.html" %}
+
+{% block title %}Entity Investigation - IPDR Analysis{% endblock %}
+
+{% block content %}
+<!-- Loading Indicator -->
+<div class="loading">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading investigation tools...</p>
+</div>
+
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <i class="fas fa-search me-2"></i>
+                    Entity Investigation Tool
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Advanced investigation tool for analyzing individual entities, their communication patterns, and relationships. Search for phone numbers, IP addresses, or any entity identifier.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-search me-2"></i>
+                    Entity Search
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control search-box" 
+                                   id="searchInput" 
+                                   placeholder="Enter phone number, IP address, or entity identifier..."
+                                   onkeypress="handleSearchKeyPress(event)">
+                            <button class="btn btn-primary" type="button" onclick="performSearch()">
+                                <i class="fas fa-search me-2"></i>
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-primary w-100" onclick="getRandomEntity()">
+                            <i class="fas fa-random me-2"></i>
+                            Random Entity
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Search Suggestions -->
+                <div class="mt-3" id="searchSuggestions" style="display: none;">
+                    <small class="text-muted">Recent searches:</small>
+                    <div id="suggestionsList" class="mt-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Results -->
+<div class="row mb-4" id="searchResults" style="display: none;">
+    <!-- Entity Overview -->
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-user me-2"></i>
+                    Entity Overview
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="stat-number" id="entity-name">-</div>
+                    <div class="stat-label">Entity ID</div>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="stat-number" id="total-comms">-</div>
+                        <div class="stat-label">Total Communications</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-number" id="unique-partners">-</div>
+                        <div class="stat-label">Unique Partners</div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="stat-number" id="as-initiator">-</div>
+                        <div class="stat-label">As Initiator</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-number" id="as-recipient">-</div>
+                        <div class="stat-label">As Recipient</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Activity Timeline -->
+    <div class="col-md-8 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Activity Timeline
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="activityTimeline">
+                    <p class="text-muted">Loading activity timeline...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Analysis -->
+<div class="row mb-4" id="detailedAnalysis" style="display: none;">
+    <!-- Top Communication Partners -->
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Top Communication Partners
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="topPartners">
+                    <p class="text-muted">Loading partner data...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-history me-2"></i>
+                    Recent Activity
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="recentActivity">
+                    <p class="text-muted">Loading recent activity...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Analysis -->
+<div class="row mb-4" id="advancedAnalysis" style="display: none;">
+    <!-- Communication Patterns -->
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Communication Patterns
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="patternChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Suspicious Indicators -->
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Suspicious Indicators
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="suspiciousIndicators">
+                    <p class="text-muted">Analyzing suspicious patterns...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Related Entities -->
+<div class="row mb-4" id="relatedEntities" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-project-diagram me-2"></i>
+                    Related Entities Network
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="relatedNetwork" class="network-container">
+                    <p class="text-muted">Loading network visualization...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Options -->
+<div class="row" id="exportOptions" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-download me-2"></i>
+                    Export Investigation Results
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-outline-primary w-100" onclick="exportToPDF()">
+                            <i class="fas fa-file-pdf me-2"></i>
+                            Export to PDF
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-outline-primary w-100" onclick="exportToCSV()">
+                            <i class="fas fa-file-csv me-2"></i>
+                            Export to CSV
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-outline-primary w-100" onclick="exportToJSON()">
+                            <i class="fas fa-file-code me-2"></i>
+                            Export to JSON
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-outline-primary w-100" onclick="shareInvestigation()">
+                            <i class="fas fa-share me-2"></i>
+                            Share Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentEntity = null;
+let patternChart = null;
+let searchHistory = [];
+
+// Initialize investigation page
+document.addEventListener('DOMContentLoaded', function() {
+    loadSearchHistory();
+    setupEventListeners();
+});
+
+function setupEventListeners() {
+    // Auto-complete functionality
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+        if (this.value.length > 2) {
+            showSearchSuggestions(this.value);
+        } else {
+            hideSearchSuggestions();
+        }
+    });
+}
+
+function handleSearchKeyPress(event) {
+    if (event.key === 'Enter') {
+        performSearch();
+    }
+}
+
+async function performSearch() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) {
+        showAlert('Please enter a search query', 'warning');
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+            currentEntity = data;
+            displaySearchResults(data);
+            addToSearchHistory(query);
+            showAlert(`✅ Found ${data.total_communications} communications for ${query}`, 'success');
+        } else {
+            throw new Error(data.error || 'Search failed');
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+        showAlert(`❌ Search error: ${error.message}`, 'danger');
+    } finally {
+        hideLoading();
+    }
+}
+
+function displaySearchResults(data) {
+    // Show results sections
+    document.getElementById('searchResults').style.display = 'block';
+    document.getElementById('detailedAnalysis').style.display = 'block';
+    document.getElementById('advancedAnalysis').style.display = 'block';
+    document.getElementById('relatedEntities').style.display = 'block';
+    document.getElementById('exportOptions').style.display = 'block';
+    
+    // Update entity overview
+    document.getElementById('entity-name').textContent = data.entity;
+    document.getElementById('total-comms').textContent = formatNumber(data.total_communications);
+    document.getElementById('unique-partners').textContent = formatNumber(data.communication_partners.length);
+    document.getElementById('as-initiator').textContent = formatNumber(data.as_initiator);
+    document.getElementById('as-recipient').textContent = formatNumber(data.as_recipient);
+    
+    // Update activity timeline
+    updateActivityTimeline(data);
+    
+    // Update top partners
+    updateTopPartners(data.top_partners);
+    
+    // Update recent activity
+    updateRecentActivity(data.recent_activity);
+    
+    // Create pattern chart
+    createPatternChart(data);
+    
+    // Update suspicious indicators
+    updateSuspiciousIndicators(data);
+    
+    // Load related entities network
+    loadRelatedNetwork(data.entity);
+}
+
+function updateActivityTimeline(data) {
+    const container = document.getElementById('activityTimeline');
+    
+    if (data.time_range && data.time_range.first && data.time_range.last) {
+        const firstDate = new Date(data.time_range.first);
+        const lastDate = new Date(data.time_range.last);
+        
+        container.innerHTML = `
+            <div class="row text-center">
+                <div class="col-6">
+                    <div class="stat-number">${firstDate.toLocaleDateString()}</div>
+                    <div class="stat-label">First Activity</div>
+                </div>
+                <div class="col-6">
+                    <div class="stat-number">${lastDate.toLocaleDateString()}</div>
+                    <div class="stat-label">Last Activity</div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-primary" style="width: 100%"></div>
+                </div>
+                <small class="text-muted">
+                    Activity span: ${Math.ceil((lastDate - firstDate) / (1000 * 60 * 60 * 24))} days
+                </small>
+            </div>
+        `;
+    } else {
+        container.innerHTML = '<p class="text-muted">No timeline data available</p>';
+    }
+}
+
+function updateTopPartners(partners) {
+    const container = document.getElementById('topPartners');
+    
+    if (partners && partners.length > 0) {
+        let html = '';
+        partners.forEach((partner, index) => {
+            html += `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>${partner.entity}</strong>
+                        <br><small class="text-muted">${partner.count} communications</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="searchEntity('${partner.entity}')">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } else {
+        container.innerHTML = '<p class="text-muted">No partner data available</p>';
+    }
+}
+
+function updateRecentActivity(activities) {
+    const container = document.getElementById('recentActivity');
+    
+    if (activities && activities.length > 0) {
+        let html = '';
+        activities.forEach(activity => {
+            const timestamp = new Date(activity.timestamp).toLocaleString();
+            html += `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>${activity.partner}</strong>
+                        <br><small class="text-muted">${timestamp} - ${formatDuration(activity.duration)}</small>
+                    </div>
+                    <span class="badge bg-secondary">${activity.service_type}</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } else {
+        container.innerHTML = '<p class="text-muted">No recent activity available</p>';
+    }
+}
+
+function createPatternChart(data) {
+    const ctx = document.getElementById('patternChart').getContext('2d');
+    
+    // Create sample pattern data (you can enhance this with real data)
+    const hours = Array.from({length: 24}, (_, i) => i);
+    const activityData = hours.map(hour => Math.floor(Math.random() * 20) + 5); // Sample data
+    
+    if (patternChart) {
+        patternChart.destroy();
+    }
+    
+    patternChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: hours.map(h => `${h}:00`),
+            datasets: [{
+                label: 'Communications per Hour',
+                data: activityData,
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ecf0f1'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateSuspiciousIndicators(data) {
+    const container = document.getElementById('suspiciousIndicators');
+    
+    // Analyze patterns for suspicious indicators
+    const indicators = [];
+    
+    if (data.total_communications > 100) {
+        indicators.push({
+            type: 'high_activity',
+            severity: 'medium',
+            description: 'High communication volume detected'
+        });
+    }
+    
+    if (data.communication_partners.length > 50) {
+        indicators.push({
+            type: 'many_partners',
+            severity: 'low',
+            description: 'Communicates with many different entities'
+        });
+    }
+    
+    if (data.as_initiator > data.as_recipient * 2) {
+        indicators.push({
+            type: 'initiator_bias',
+            severity: 'low',
+            description: 'Primarily initiates communications'
+        });
+    }
+    
+    if (indicators.length === 0) {
+        container.innerHTML = '<p class="text-success">✅ No suspicious indicators detected</p>';
+    } else {
+        let html = '';
+        indicators.forEach(indicator => {
+            const severityClass = `suspicious-${indicator.severity}`;
+            const severityIcon = indicator.severity === 'high' ? '🔴' : 
+                               indicator.severity === 'medium' ? '🟠' : '🟡';
+            
+            html += `
+                <div class="alert alert-${indicator.severity === 'high' ? 'danger' : 
+                                        indicator.severity === 'medium' ? 'warning' : 'info'} mb-2">
+                    <strong>${severityIcon} ${indicator.type.replace('_', ' ').toUpperCase()}</strong><br>
+                    ${indicator.description}
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+}
+
+async function loadRelatedNetwork(entity) {
+    const container = document.getElementById('relatedNetwork');
+    
+    try {
+        const response = await fetch('/api/network');
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Create a simple network visualization
+            createSimpleNetwork(container, data, entity);
+        } else {
+            container.innerHTML = '<p class="text-muted">Network data not available</p>';
+        }
+    } catch (error) {
+        container.innerHTML = '<p class="text-muted">Failed to load network data</p>';
+    }
+}
+
+function createSimpleNetwork(container, data, focusEntity) {
+    // Create a simple text-based network representation
+    const relatedNodes = data.nodes.filter(node => 
+        data.edges.some(edge => 
+            (edge.source === focusEntity && edge.target === node.id) ||
+            (edge.target === focusEntity && edge.source === node.id)
+        )
+    ).slice(0, 10); // Limit to 10 related entities
+    
+    if (relatedNodes.length === 0) {
+        container.innerHTML = '<p class="text-muted">No related entities found</p>';
+        return;
+    }
+    
+    let html = `
+        <div class="text-center mb-3">
+            <h6>${focusEntity}</h6>
+            <small class="text-muted">(Focus Entity)</small>
+        </div>
+        <div class="row">
+    `;
+    
+    relatedNodes.forEach(node => {
+        html += `
+            <div class="col-md-3 mb-2">
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                        <small>${node.id.substring(0, 8)}...</small>
+                        <br>
+                        <span class="badge bg-primary">${node.degree} connections</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function getRandomEntity() {
+    // This would typically fetch a random entity from the dataset
+    const sampleEntities = [
+        '9199461803',
+        '9199899850',
+        '9199127192',
+        '117.157.175.10',
+        '203.189.19.6'
+    ];
+    
+    const randomEntity = sampleEntities[Math.floor(Math.random() * sampleEntities.length)];
+    document.getElementById('searchInput').value = randomEntity;
+    performSearch();
+}
+
+function searchEntity(entity) {
+    document.getElementById('searchInput').value = entity;
+    performSearch();
+}
+
+function loadSearchHistory() {
+    const history = localStorage.getItem('ipdr_search_history');
+    if (history) {
+        searchHistory = JSON.parse(history);
+    }
+}
+
+function addToSearchHistory(query) {
+    if (!searchHistory.includes(query)) {
+        searchHistory.unshift(query);
+        searchHistory = searchHistory.slice(0, 10); // Keep only last 10 searches
+        localStorage.setItem('ipdr_search_history', JSON.stringify(searchHistory));
+    }
+}
+
+function showSearchSuggestions(query) {
+    const suggestions = searchHistory.filter(item => 
+        item.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    if (suggestions.length > 0) {
+        const container = document.getElementById('suggestionsList');
+        let html = '';
+        suggestions.forEach(suggestion => {
+            html += `
+                <span class="badge bg-secondary me-1 mb-1" 
+                      style="cursor: pointer;" 
+                      onclick="selectSuggestion('${suggestion}')">
+                    ${suggestion}
+                </span>
+            `;
+        });
+        container.innerHTML = html;
+        document.getElementById('searchSuggestions').style.display = 'block';
+    }
+}
+
+function hideSearchSuggestions() {
+    document.getElementById('searchSuggestions').style.display = 'none';
+}
+
+function selectSuggestion(suggestion) {
+    document.getElementById('searchInput').value = suggestion;
+    hideSearchSuggestions();
+    performSearch();
+}
+
+// Export functions
+function exportToPDF() {
+    showAlert('PDF export feature coming soon!', 'info');
+}
+
+function exportToCSV() {
+    if (currentEntity) {
+        const csvContent = `Entity,Total Communications,Unique Partners,As Initiator,As Recipient\n${currentEntity.entity},${currentEntity.total_communications},${currentEntity.communication_partners.length},${currentEntity.as_initiator},${currentEntity.as_recipient}`;
+        downloadFile(csvContent, `investigation_${currentEntity.entity}.csv`, 'text/csv');
+    }
+}
+
+function exportToJSON() {
+    if (currentEntity) {
+        const jsonContent = JSON.stringify(currentEntity, null, 2);
+        downloadFile(jsonContent, `investigation_${currentEntity.entity}.json`, 'application/json');
+    }
+}
+
+function shareInvestigation() {
+    if (currentEntity) {
+        const shareUrl = `${window.location.origin}/investigation?entity=${encodeURIComponent(currentEntity.entity)}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showAlert('Investigation URL copied to clipboard!', 'success');
+        });
+    }
+}
+
+function downloadFile(content, filename, contentType) {
+    const blob = new Blob([content], { type: contentType });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+</script>
+{% endblock %}

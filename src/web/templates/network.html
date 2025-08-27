@@ -1,0 +1,513 @@
+{% extends "base.html" %}
+
+{% block title %}Network Visualization - IPDR Analysis{% endblock %}
+
+{% block content %}
+<!-- Loading Indicator -->
+<div class="loading">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading network visualization...</p>
+</div>
+
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <i class="fas fa-project-diagram me-2"></i>
+                    Network Visualization
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Interactive network graph showing communication relationships between entities. Explore connections, identify clusters, and discover patterns in the communication network.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Network Controls -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-sliders-h me-2"></i>
+                    Network Controls
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Max Nodes</label>
+                        <select class="form-select" id="maxNodes" onchange="updateNetwork()">
+                            <option value="50">50 nodes</option>
+                            <option value="100" selected>100 nodes</option>
+                            <option value="200">200 nodes</option>
+                            <option value="300">300 nodes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Layout</label>
+                        <select class="form-select" id="layoutType" onchange="updateNetwork()">
+                            <option value="force">Force Layout</option>
+                            <option value="circular">Circular</option>
+                            <option value="hierarchical">Hierarchical</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Node Size</label>
+                        <select class="form-select" id="nodeSize" onchange="updateNetwork()">
+                            <option value="degree">By Degree</option>
+                            <option value="activity">By Activity</option>
+                            <option value="fixed">Fixed Size</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Actions</label>
+                        <div class="d-grid">
+                            <button class="btn btn-primary" onclick="refreshNetwork()">
+                                <i class="fas fa-sync-alt me-2"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Network Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="stat-number" id="total-nodes">-</div>
+            <div class="stat-label">Total Nodes</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="stat-number" id="total-edges">-</div>
+            <div class="stat-label">Total Edges</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="stat-number" id="avg-degree">-</div>
+            <div class="stat-label">Avg Degree</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="stat-number" id="components">-</div>
+            <div class="stat-label">Components</div>
+        </div>
+    </div>
+</div>
+
+<!-- Network Visualization -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-network-wired me-2"></i>
+                    Communication Network
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div id="networkContainer" class="network-container">
+                    <div class="text-center p-5">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading network data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Network Analysis -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Degree Distribution
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="degreeChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Top Connected Nodes
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="topNodes">
+                    <p class="text-muted">Loading top nodes...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Network Insights -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Network Insights
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="networkInsights">
+                    <p class="text-muted">Analyzing network patterns...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let networkData = null;
+let degreeChart = null;
+let simulation = null;
+
+// Initialize network page
+document.addEventListener('DOMContentLoaded', function() {
+    loadNetworkData();
+});
+
+async function loadNetworkData() {
+    showLoading();
+    
+    try {
+        const response = await fetch('/api/network');
+        const data = await response.json();
+        
+        if (response.ok) {
+            networkData = data;
+            displayNetworkStatistics(data);
+            createNetworkVisualization(data);
+            createDegreeChart(data);
+            displayTopNodes(data);
+            generateNetworkInsights(data);
+        } else {
+            throw new Error(data.error || 'Failed to load network data');
+        }
+    } catch (error) {
+        console.error('Network loading error:', error);
+        showAlert(`❌ Error: ${error.message}`, 'danger');
+    } finally {
+        hideLoading();
+    }
+}
+
+function displayNetworkStatistics(data) {
+    const totalNodes = data.nodes.length;
+    const totalEdges = data.edges.length;
+    const avgDegree = totalNodes > 0 ? (totalEdges * 2 / totalNodes).toFixed(1) : 0;
+    
+    document.getElementById('total-nodes').textContent = formatNumber(totalNodes);
+    document.getElementById('total-edges').textContent = formatNumber(totalEdges);
+    document.getElementById('avg-degree').textContent = avgDegree;
+    document.getElementById('components').textContent = '1'; // Simplified
+}
+
+function createNetworkVisualization(data) {
+    const container = document.getElementById('networkContainer');
+    container.innerHTML = '';
+    
+    const width = container.clientWidth;
+    const height = 600;
+    
+    // Create SVG
+    const svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+    
+    // Create tooltip
+    const tooltip = d3.select('body')
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('opacity', 0);
+    
+    // Create force simulation
+    simulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.edges).id(d => d.id).distance(100))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(30));
+    
+    // Create links
+    const links = svg.append('g')
+        .selectAll('line')
+        .data(data.edges)
+        .enter()
+        .append('line')
+        .attr('stroke', '#999')
+        .attr('stroke-opacity', 0.6)
+        .attr('stroke-width', 1);
+    
+    // Create nodes
+    const nodes = svg.append('g')
+        .selectAll('circle')
+        .data(data.nodes)
+        .enter()
+        .append('circle')
+        .attr('r', d => Math.min(d.size, 20))
+        .attr('fill', d => getNodeColor(d.degree))
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            tooltip.transition()
+                .duration(200)
+                .style('opacity', .9);
+            tooltip.html(`
+                <strong>${d.id}</strong><br/>
+                Degree: ${d.degree}<br/>
+                Connections: ${d.size}
+            `)
+                .style('left', (event.pageX + 5) + 'px')
+                .style('top', (event.pageY - 28) + 'px');
+        })
+        .on('mouseout', function(d) {
+            tooltip.transition()
+                .duration(500)
+                .style('opacity', 0);
+        })
+        .on('click', function(event, d) {
+            // Navigate to investigation page
+            window.location.href = `/investigation?entity=${encodeURIComponent(d.id)}`;
+        });
+    
+    // Add drag behavior
+    nodes.call(d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended));
+    
+    // Update positions on simulation tick
+    simulation.on('tick', () => {
+        links
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+        
+        nodes
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+    });
+    
+    function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+    
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+    
+    function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+}
+
+function getNodeColor(degree) {
+    if (degree > 100) return '#e74c3c'; // Red for high degree
+    if (degree > 50) return '#f39c12';  // Orange for medium degree
+    if (degree > 20) return '#3498db';  // Blue for low-medium degree
+    return '#95a5a6';                   // Gray for low degree
+}
+
+function createDegreeChart(data) {
+    const ctx = document.getElementById('degreeChart').getContext('2d');
+    
+    // Calculate degree distribution
+    const degreeCounts = {};
+    data.nodes.forEach(node => {
+        const degree = node.degree;
+        degreeCounts[degree] = (degreeCounts[degree] || 0) + 1;
+    });
+    
+    const degrees = Object.keys(degreeCounts).map(Number).sort((a, b) => a - b);
+    const counts = degrees.map(degree => degreeCounts[degree]);
+    
+    if (degreeChart) {
+        degreeChart.destroy();
+    }
+    
+    degreeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: degrees.map(d => `${d} connections`),
+            datasets: [{
+                label: 'Number of Nodes',
+                data: counts,
+                backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                borderColor: '#3498db',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ecf0f1'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function displayTopNodes(data) {
+    const container = document.getElementById('topNodes');
+    
+    // Sort nodes by degree and get top 10
+    const topNodes = data.nodes
+        .sort((a, b) => b.degree - a.degree)
+        .slice(0, 10);
+    
+    let html = '';
+    topNodes.forEach((node, index) => {
+        html += `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <strong>${index + 1}. ${node.id.substring(0, 12)}...</strong>
+                    <br><small class="text-muted">${node.degree} connections</small>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="investigateNode('${node.id}')">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function generateNetworkInsights(data) {
+    const container = document.getElementById('networkInsights');
+    
+    const totalNodes = data.nodes.length;
+    const totalEdges = data.edges.length;
+    const avgDegree = totalNodes > 0 ? (totalEdges * 2 / totalNodes) : 0;
+    
+    const insights = [];
+    
+    if (avgDegree > 50) {
+        insights.push({
+            type: 'high_connectivity',
+            severity: 'medium',
+            description: 'Network shows high connectivity with average degree of ' + avgDegree.toFixed(1)
+        });
+    }
+    
+    if (totalNodes > 200) {
+        insights.push({
+            type: 'large_network',
+            severity: 'info',
+            description: 'Large network with ' + totalNodes + ' entities'
+        });
+    }
+    
+    const highDegreeNodes = data.nodes.filter(n => n.degree > 50).length;
+    if (highDegreeNodes > 10) {
+        insights.push({
+            type: 'hub_nodes',
+            severity: 'warning',
+            description: highDegreeNodes + ' entities act as communication hubs'
+        });
+    }
+    
+    if (insights.length === 0) {
+        container.innerHTML = '<p class="text-success">✅ Network appears to have normal connectivity patterns</p>';
+    } else {
+        let html = '';
+        insights.forEach(insight => {
+            const severityClass = `suspicious-${insight.severity}`;
+            const severityIcon = insight.severity === 'high' ? '🔴' : 
+                               insight.severity === 'medium' ? '🟠' : 
+                               insight.severity === 'warning' ? '🟡' : '🔵';
+            
+            html += `
+                <div class="alert alert-${insight.severity === 'high' ? 'danger' : 
+                                        insight.severity === 'medium' ? 'warning' : 
+                                        insight.severity === 'warning' ? 'warning' : 'info'} mb-2">
+                    <strong>${severityIcon} ${insight.type.replace('_', ' ').toUpperCase()}</strong><br>
+                    ${insight.description}
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+}
+
+function updateNetwork() {
+    if (networkData) {
+        const maxNodes = parseInt(document.getElementById('maxNodes').value);
+        const filteredData = {
+            nodes: networkData.nodes.slice(0, maxNodes),
+            edges: networkData.edges.filter(edge => 
+                networkData.nodes.slice(0, maxNodes).some(n => n.id === edge.source) &&
+                networkData.nodes.slice(0, maxNodes).some(n => n.id === edge.target)
+            )
+        };
+        
+        createNetworkVisualization(filteredData);
+        displayNetworkStatistics(filteredData);
+    }
+}
+
+function refreshNetwork() {
+    loadNetworkData();
+}
+
+function investigateNode(nodeId) {
+    window.location.href = `/investigation?entity=${encodeURIComponent(nodeId)}`;
+}
+</script>
+{% endblock %}

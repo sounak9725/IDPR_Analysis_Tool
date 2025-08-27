@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - IPDR Analysis{% endblock %}
+
+{% block content %}
+<!-- Loading Indicator -->
+<div class="loading">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading IPDR data...</p>
+</div>
+
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    IPDR Analysis Dashboard
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Welcome to the IPDR Analysis Dashboard. This tool provides comprehensive analysis of Internet Protocol Detail Records with advanced pattern detection and network visualization capabilities.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4" id="stats-container">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="stat-number" id="total-records">-</div>
+            <div class="stat-label">Total Records</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="stat-number" id="unique-entities">-</div>
+            <div class="stat-label">Unique Entities</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="stat-number" id="network-connections">-</div>
+            <div class="stat-label">Network Connections</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="stat-number suspicious-high" id="suspicious-count">-</div>
+            <div class="stat-label">Suspicious Activities</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <!-- Time Patterns Chart -->
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Communication Patterns by Hour
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="timeChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Communicators Chart -->
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Top Communicators
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="communicatorsChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Suspicious Activities -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Suspicious Activities Detected
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="suspicious-activities">
+                    <p class="text-muted">Loading suspicious activities...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="/investigation" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-2"></i>
+                            Entity Investigation
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="/network" class="btn btn-primary w-100">
+                            <i class="fas fa-project-diagram me-2"></i>
+                            Network Visualization
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="/patterns" class="btn btn-primary w-100">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Pattern Analysis
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-primary w-100" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let timeChart, communicatorsChart;
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    loadData();
+});
+
+async function loadData() {
+    showLoading();
+    
+    try {
+        // Load IPDR data
+        const loadResponse = await fetch('/api/load-data');
+        const loadResult = await loadResponse.json();
+        
+        if (!loadResult.success) {
+            throw new Error(loadResult.error || 'Failed to load data');
+        }
+        
+        showAlert(`✅ ${loadResult.message}`, 'success');
+        
+        // Load overview statistics
+        await loadOverview();
+        
+        // Load suspicious activities
+        await loadSuspiciousActivities();
+        
+        // Load charts
+        await loadCharts();
+        
+    } catch (error) {
+        console.error('Error loading data:', error);
+        showAlert(`❌ Error: ${error.message}`, 'danger');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function loadOverview() {
+    const response = await fetch('/api/overview');
+    const data = await response.json();
+    
+    if (response.ok) {
+        document.getElementById('total-records').textContent = formatNumber(data.total_records);
+        document.getElementById('unique-entities').textContent = formatNumber(data.unique_a_parties);
+        document.getElementById('network-connections').textContent = formatNumber(data.network_edges);
+        document.getElementById('suspicious-count').textContent = formatNumber(data.suspicious_count);
+    }
+}
+
+async function loadSuspiciousActivities() {
+    const response = await fetch('/api/suspicious');
+    const data = await response.json();
+    
+    if (response.ok) {
+        const container = document.getElementById('suspicious-activities');
+        
+        if (data.suspicious_activities.length === 0) {
+            container.innerHTML = '<p class="text-success">✅ No suspicious activities detected</p>';
+            return;
+        }
+        
+        let html = '<div class="row">';
+        data.suspicious_activities.forEach((activity, index) => {
+            const severityClass = `suspicious-${activity.severity}`;
+            const severityIcon = activity.severity === 'high' ? '🔴' : 
+                               activity.severity === 'medium' ? '🟠' : '🟡';
+            
+            html += `
+                <div class="col-md-6 mb-3">
+                    <div class="card border-${activity.severity === 'high' ? 'danger' : 
+                                           activity.severity === 'medium' ? 'warning' : 'info'}">
+                        <div class="card-body">
+                            <h6 class="card-title ${severityClass}">
+                                ${severityIcon} ${activity.type.replace('_', ' ').toUpperCase()}
+                            </h6>
+                            <p class="card-text">${activity.description}</p>
+                            <small class="text-muted">Severity: ${activity.severity.toUpperCase()}</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+    }
+}
+
+async function loadCharts() {
+    const response = await fetch('/api/patterns');
+    const data = await response.json();
+    
+    if (response.ok) {
+        createTimeChart(data.time_patterns);
+        createCommunicatorsChart(data.top_communicators);
+    }
+}
+
+function createTimeChart(timePatterns) {
+    const ctx = document.getElementById('timeChart').getContext('2d');
+    
+    // Create 24-hour data
+    const hours = Array.from({length: 24}, (_, i) => i);
+    const peakHours = timePatterns.peak_hours || [];
+    const quietHours = timePatterns.quiet_hours || [];
+    
+    const data = hours.map(hour => {
+        if (peakHours.includes(hour)) return 3;
+        if (quietHours.includes(hour)) return 1;
+        return 2;
+    });
+    
+    timeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: hours.map(h => `${h}:00`),
+            datasets: [{
+                label: 'Activity Level',
+                data: data,
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ecf0f1'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 3,
+                    ticks: {
+                        color: '#ecf0f1',
+                        callback: function(value) {
+                            if (value === 3) return 'Peak';
+                            if (value === 1) return 'Quiet';
+                            return 'Normal';
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createCommunicatorsChart(communicators) {
+    const ctx = document.getElementById('communicatorsChart').getContext('2d');
+    
+    const topInitiators = communicators.initiators.slice(0, 5);
+    const topRecipients = communicators.recipients.slice(0, 5);
+    
+    communicatorsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: topInitiators.map(item => item[0].substring(0, 8) + '...'),
+            datasets: [{
+                label: 'Initiators',
+                data: topInitiators.map(item => item[1]),
+                backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                borderColor: '#3498db',
+                borderWidth: 1
+            }, {
+                label: 'Recipients',
+                data: topRecipients.map(item => item[1]),
+                backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                borderColor: '#e74c3c',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ecf0f1'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function refreshData() {
+    loadData();
+}
+</script>
+{% endblock %}

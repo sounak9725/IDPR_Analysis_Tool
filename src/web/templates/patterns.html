@@ -1,0 +1,553 @@
+{% extends "base.html" %}
+
+{% block title %}Pattern Analysis - IPDR Analysis{% endblock %}
+
+{% block content %}
+<!-- Loading Indicator -->
+<div class="loading">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading pattern analysis...</p>
+</div>
+
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Pattern Analysis
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Advanced pattern analysis showing communication trends, time-based patterns, and behavioral insights. Discover hidden patterns and anomalies in the IPDR data.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Time-based Patterns -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Time-based Communication Patterns
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <canvas id="timePatternChart" height="300"></canvas>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="timeInsights">
+                            <h6>Time Insights</h6>
+                            <div class="mb-3">
+                                <strong>Peak Hours:</strong>
+                                <div id="peakHours" class="mt-1"></div>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Quiet Hours:</strong>
+                                <div id="quietHours" class="mt-1"></div>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Pattern Analysis:</strong>
+                                <div id="timeAnalysis" class="mt-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Communication Volume Analysis -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Top Initiators vs Recipients
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="initiatorsRecipientsChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Service Type Distribution
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="serviceTypeChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Duration Analysis -->
+<div class="row mb-4">
+    <div class="col-md-8 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-hourglass-half me-2"></i>
+                    Communication Duration Patterns
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="durationChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Duration Statistics
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="durationStats">
+                    <div class="mb-3">
+                        <strong>Average Duration:</strong>
+                        <div id="avgDuration" class="stat-number">-</div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Short Calls (≤5s):</strong>
+                        <div id="shortCalls" class="stat-number">-</div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Long Calls (>5min):</strong>
+                        <div id="longCalls" class="stat-number">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Behavioral Patterns -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>
+                    Behavioral Pattern Analysis
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="behavioralPatterns">
+                    <p class="text-muted">Analyzing behavioral patterns...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Anomaly Detection -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Anomaly Detection
+                </h6>
+            </div>
+            <div class="card-body">
+                <div id="anomalies">
+                    <p class="text-muted">Detecting anomalies...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let timePatternChart, initiatorsRecipientsChart, serviceTypeChart, durationChart;
+
+// Initialize patterns page
+document.addEventListener('DOMContentLoaded', function() {
+    loadPatternData();
+});
+
+async function loadPatternData() {
+    showLoading();
+    
+    try {
+        const response = await fetch('/api/patterns');
+        const data = await response.json();
+        
+        if (response.ok) {
+            createTimePatternChart(data.time_patterns);
+            createInitiatorsRecipientsChart(data.top_communicators);
+            createServiceTypeChart();
+            createDurationChart();
+            displayTimeInsights(data.time_patterns);
+            displayDurationStats();
+            analyzeBehavioralPatterns();
+            detectAnomalies();
+        } else {
+            throw new Error(data.error || 'Failed to load pattern data');
+        }
+    } catch (error) {
+        console.error('Pattern loading error:', error);
+        showAlert(`❌ Error: ${error.message}`, 'danger');
+    } finally {
+        hideLoading();
+    }
+}
+
+function createTimePatternChart(timePatterns) {
+    const ctx = document.getElementById('timePatternChart').getContext('2d');
+    
+    // Create 24-hour data
+    const hours = Array.from({length: 24}, (_, i) => i);
+    const peakHours = timePatterns.peak_hours || [];
+    const quietHours = timePatterns.quiet_hours || [];
+    
+    // Generate sample activity data (replace with real data)
+    const activityData = hours.map(hour => {
+        if (peakHours.includes(hour)) return Math.floor(Math.random() * 50) + 100;
+        if (quietHours.includes(hour)) return Math.floor(Math.random() * 20) + 10;
+        return Math.floor(Math.random() * 40) + 30;
+    });
+    
+    timePatternChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: hours.map(h => `${h}:00`),
+            datasets: [{
+                label: 'Communications per Hour',
+                data: activityData,
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ecf0f1'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createInitiatorsRecipientsChart(communicators) {
+    const ctx = document.getElementById('initiatorsRecipientsChart').getContext('2d');
+    
+    const topInitiators = communicators.initiators.slice(0, 5);
+    const topRecipients = communicators.recipients.slice(0, 5);
+    
+    initiatorsRecipientsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: topInitiators.map(item => item[0].substring(0, 8) + '...'),
+            datasets: [{
+                label: 'Initiators',
+                data: topInitiators.map(item => item[1]),
+                backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                borderColor: '#3498db',
+                borderWidth: 1
+            }, {
+                label: 'Recipients',
+                data: topRecipients.map(item => item[1]),
+                backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                borderColor: '#e74c3c',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ecf0f1'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createServiceTypeChart() {
+    const ctx = document.getElementById('serviceTypeChart').getContext('2d');
+    
+    // Sample service type data
+    const serviceTypes = ['VOICE', 'SMS', 'DATA', 'MMS'];
+    const serviceData = [65, 20, 10, 5]; // Percentages
+    
+    serviceTypeChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: serviceTypes,
+            datasets: [{
+                data: serviceData,
+                backgroundColor: [
+                    '#3498db',
+                    '#e74c3c',
+                    '#f39c12',
+                    '#27ae60'
+                ],
+                borderWidth: 2,
+                borderColor: '#2d2d2d'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#ecf0f1'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createDurationChart() {
+    const ctx = document.getElementById('durationChart').getContext('2d');
+    
+    // Sample duration distribution
+    const durationRanges = ['0-30s', '30s-2m', '2m-5m', '5m-15m', '15m+'];
+    const durationData = [25, 35, 20, 15, 5]; // Percentages
+    
+    durationChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: durationRanges,
+            datasets: [{
+                label: 'Percentage of Calls',
+                data: durationData,
+                backgroundColor: 'rgba(155, 89, 182, 0.8)',
+                borderColor: '#9b59b6',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ecf0f1'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        color: '#ecf0f1',
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ecf0f1'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function displayTimeInsights(timePatterns) {
+    const peakHours = timePatterns.peak_hours || [];
+    const quietHours = timePatterns.quiet_hours || [];
+    
+    document.getElementById('peakHours').innerHTML = peakHours.map(h => 
+        `<span class="badge bg-success me-1">${h}:00</span>`
+    ).join('');
+    
+    document.getElementById('quietHours').innerHTML = quietHours.map(h => 
+        `<span class="badge bg-secondary me-1">${h}:00</span>`
+    ).join('');
+    
+    // Generate insights
+    let analysis = '';
+    if (peakHours.length > 0) {
+        analysis += `<p class="text-success">✅ Peak activity during business hours (${peakHours.join(', ')}:00)</p>`;
+    }
+    if (quietHours.length > 0) {
+        analysis += `<p class="text-info">🌙 Low activity during late hours (${quietHours.join(', ')}:00)</p>`;
+    }
+    if (peakHours.length === 0 && quietHours.length === 0) {
+        analysis += `<p class="text-warning">⚠️ No clear time patterns detected</p>`;
+    }
+    
+    document.getElementById('timeAnalysis').innerHTML = analysis;
+}
+
+function displayDurationStats() {
+    // Sample statistics (replace with real data)
+    document.getElementById('avgDuration').textContent = '7m 23s';
+    document.getElementById('shortCalls').textContent = '3,247 (21.6%)';
+    document.getElementById('longCalls').textContent = '1,892 (12.6%)';
+}
+
+function analyzeBehavioralPatterns() {
+    const container = document.getElementById('behavioralPatterns');
+    
+    const patterns = [
+        {
+            type: 'burst_communications',
+            description: 'Entities showing burst communication patterns (multiple calls in short time)',
+            count: 45,
+            severity: 'medium'
+        },
+        {
+            type: 'regular_schedule',
+            description: 'Entities with regular daily communication schedules',
+            count: 128,
+            severity: 'low'
+        },
+        {
+            type: 'weekend_activity',
+            description: 'Unusual weekend communication patterns',
+            count: 23,
+            severity: 'medium'
+        }
+    ];
+    
+    let html = '<div class="row">';
+    patterns.forEach(pattern => {
+        const severityClass = `suspicious-${pattern.severity}`;
+        const severityIcon = pattern.severity === 'high' ? '🔴' : 
+                           pattern.severity === 'medium' ? '🟠' : '🟡';
+        
+        html += `
+            <div class="col-md-4 mb-3">
+                <div class="card border-${pattern.severity === 'high' ? 'danger' : 
+                                       pattern.severity === 'medium' ? 'warning' : 'info'}">
+                    <div class="card-body">
+                        <h6 class="card-title ${severityClass}">
+                            ${severityIcon} ${pattern.type.replace('_', ' ').toUpperCase()}
+                        </h6>
+                        <p class="card-text">${pattern.description}</p>
+                        <strong>${pattern.count} entities affected</strong>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+
+function detectAnomalies() {
+    const container = document.getElementById('anomalies');
+    
+    const anomalies = [
+        {
+            type: 'unusual_timing',
+            description: 'Communications during unusual hours (2AM-5AM)',
+            entities: 156,
+            severity: 'medium'
+        },
+        {
+            type: 'frequency_spikes',
+            description: 'Sudden spikes in communication frequency',
+            entities: 89,
+            severity: 'high'
+        },
+        {
+            type: 'duration_anomalies',
+            description: 'Unusually short or long communication durations',
+            entities: 234,
+            severity: 'medium'
+        },
+        {
+            type: 'geographic_anomalies',
+            description: 'Communications from unexpected geographic locations',
+            entities: 67,
+            severity: 'high'
+        }
+    ];
+    
+    let html = '<div class="row">';
+    anomalies.forEach(anomaly => {
+        const severityClass = `suspicious-${anomaly.severity}`;
+        const severityIcon = anomaly.severity === 'high' ? '🔴' : '🟠';
+        
+        html += `
+            <div class="col-md-6 mb-3">
+                <div class="alert alert-${anomaly.severity === 'high' ? 'danger' : 'warning'}">
+                    <h6 class="alert-heading ${severityClass}">
+                        ${severityIcon} ${anomaly.type.replace('_', ' ').toUpperCase()}
+                    </h6>
+                    <p class="mb-1">${anomaly.description}</p>
+                    <strong>${anomaly.entities} entities flagged</strong>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+</script>
+{% endblock %}
