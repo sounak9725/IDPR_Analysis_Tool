@@ -317,6 +317,15 @@
         .alert {
             color: #000000 !important;
         }
+        .alert * {
+            color: #000000 !important;
+        }
+        .alert .alert-heading,
+        .alert p,
+        .alert strong { color: #000000 !important; }
+        .alert .suspicious-high,
+        .alert .suspicious-medium,
+        .alert .suspicious-low { color: #000000 !important; }
         
         /* Ensure badge text is white */
         .badge {
@@ -349,6 +358,14 @@
             color: #000000 !important;
         }
         
+        /* Explicit exceptions for light UI controls (dataset selector) */
+        .dataset-select,
+        .dataset-select *,
+        .dataset-select option {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+
         /* Network statistics cards - keep white text on dark background */
         .network-stats .stat-card,
         .network-stats .stat-number,

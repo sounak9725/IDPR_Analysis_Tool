@@ -15,6 +15,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_socketio import SocketIO, emit
 import threading
 import time
+from werkzeug.utils import secure_filename
 
 # Configure logging
 logging.basicConfig(
@@ -56,6 +57,7 @@ class IPDRDashboard:
         self.filtering_system = None
         self.case_management = None
         self.data_loaded = False
+        self.current_dataset_path = None
         self.setup_routes()
         self.setup_error_handlers()
     
@@ -180,11 +182,127 @@ class IPDRDashboard:
                     
                     self.analyzer.extract_relationships()
                     self.data_loaded = True
+                    self.current_dataset_path = data_file
                 
                 return jsonify({
                     'success': True,
                     'message': f'Loaded {len(self.analyzer.data)} records',
-                    'records_count': len(self.analyzer.data)
+                    'records_count': len(self.analyzer.data),
+                    'dataset_path': self.current_dataset_path
+                })
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+
+        @self.app.route('/api/upload-data', methods=['POST'])
+        def upload_data():
+            """Upload a user dataset (CSV/JSON/TXT). Does not auto-activate."""
+            try:
+                if 'file' not in request.files:
+                    return jsonify({'error': 'No file part in request'}), 400
+                file = request.files['file']
+                if file.filename == '':
+                    return jsonify({'error': 'No selected file'}), 400
+
+                filename = secure_filename(file.filename)
+                raw_dir = os.path.join('data', 'raw')
+                os.makedirs(raw_dir, exist_ok=True)
+                save_path = os.path.join(raw_dir, f"uploaded_{int(time.time())}_{filename}")
+                file.save(save_path)
+
+                return jsonify({
+                    'success': True,
+                    'message': f'Uploaded {filename}. Activate it from the dataset selector to use.',
+                    'path': save_path
+                })
+            except Exception as e:
+                logger.exception('Upload failed')
+                return jsonify({'error': str(e)}), 500
+
+        @self.app.route('/api/generate-data', methods=['POST'])
+        def generate_data():
+            """Generate a synthetic dataset. Does not auto-activate."""
+            try:
+                payload = request.get_json(silent=True) or {}
+                num_records = int(payload.get('num_records', 10000))
+                days_span = int(payload.get('days_span', 30))
+
+                # Lazy import to avoid cost if unused
+                from src.utils.synthetic_ipdr_generator import SyntheticIPDRGenerator
+
+                generator = SyntheticIPDRGenerator()
+                records = generator.generate_ipdr_records(num_records=num_records, days_span=days_span)
+
+                raw_dir = os.path.join('data', 'raw')
+                os.makedirs(raw_dir, exist_ok=True)
+                filename = f"generated_{int(time.time())}.csv"
+                save_path = os.path.join(raw_dir, filename)
+
+                # Save CSV
+                import pandas as pd
+                pd.DataFrame(records).to_csv(save_path, index=False)
+
+                return jsonify({
+                    'success': True,
+                    'message': f'Generated dataset saved as {filename}. Activate it from the selector.',
+                    'path': save_path
+                })
+            except Exception as e:
+                logger.exception('Generation failed')
+                return jsonify({'error': str(e)}), 500
+
+        @self.app.route('/api/datasets')
+        def list_datasets():
+            """List available datasets in data/raw with basic metadata."""
+            try:
+                raw_dir = os.path.join('data', 'raw')
+                os.makedirs(raw_dir, exist_ok=True)
+                files = []
+                for name in os.listdir(raw_dir):
+                    if name.lower().endswith(('.csv', '.json', '.txt')):
+                        path = os.path.join(raw_dir, name)
+                        stat = os.stat(path)
+                        files.append({
+                            'name': name,
+                            'path': path,
+                            'size': stat.st_size,
+                            'modified': datetime.fromtimestamp(stat.st_mtime).isoformat()
+                        })
+                files.sort(key=lambda f: f['modified'], reverse=True)
+                return jsonify({
+                    'success': True,
+                    'current': self.current_dataset_path,
+                    'datasets': files
+                })
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+
+        @self.app.route('/api/activate-dataset', methods=['POST'])
+        def activate_dataset():
+            """Activate a chosen dataset by path, loading it into memory and rebuilding the graph."""
+            try:
+                payload = request.get_json() or {}
+                dataset_path = payload.get('path')
+                if not dataset_path or not os.path.exists(dataset_path):
+                    return jsonify({'error': 'Dataset path not found'}), 400
+
+                # Initialize analyzers if needed
+                if self.analyzer is None:
+                    self.analyzer = IPDRAnalyzer()
+                    self.enhanced_analyzer = EnhancedBPartyAnalyzer()
+                    self.filtering_system = AdvancedFilteringSystem()
+                    self.case_management = CaseManagementSystem()
+
+                if not self.analyzer.parse_ipdr_file(dataset_path):
+                    return jsonify({'error': 'Failed to parse selected dataset'}), 400
+                self.analyzer.network_graph.clear()
+                self.analyzer.extract_relationships()
+                self.data_loaded = True
+                self.current_dataset_path = dataset_path
+
+                return jsonify({
+                    'success': True,
+                    'message': f'Activated dataset with {len(self.analyzer.data)} records',
+                    'dataset_path': self.current_dataset_path
                 })
             except Exception as e:
                 return jsonify({'error': str(e)}), 500

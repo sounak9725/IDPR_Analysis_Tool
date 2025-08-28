@@ -146,6 +146,27 @@
                             Refresh Data
                         </button>
                     </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="btn btn-success w-100 mb-2">
+                            <i class="fas fa-file-upload me-2"></i>
+                            Upload Dataset
+                            <input id="dataset-file" type="file" accept=".csv,.json,.txt" hidden onchange="uploadDataset(event)">
+                        </label>
+                        <button class="btn btn-outline-success w-100" onclick="generateDataset()">
+                            <i class="fas fa-database me-2"></i>
+                            Generate Synthetic Data
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <div class="input-group">
+                            <select id="dataset-selector" class="form-select dataset-select"></select>
+                            <button class="btn btn-warning" onclick="activateSelectedDataset()">
+                                <i class="fas fa-play me-1"></i>
+                                Activate
+                            </button>
+                        </div>
+                        <small class="text-muted">Select and activate dataset</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -217,6 +238,7 @@ let timeChart, communicatorsChart;
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
     loadData();
+    refreshDatasetList();
 });
 
 async function loadData() {
@@ -314,6 +336,12 @@ async function loadCharts() {
 function createTimeChart(timePatterns) {
     const ctx = document.getElementById('timeChart').getContext('2d');
     
+    // Destroy existing chart if present to avoid canvas reuse errors
+    if (timeChart) {
+        try { timeChart.destroy(); } catch (e) { /* ignore */ }
+        timeChart = null;
+    }
+
     // Create 24-hour data
     const hours = Array.from({length: 24}, (_, i) => i);
     const peakHours = timePatterns.peak_hours || [];
@@ -374,6 +402,12 @@ function createTimeChart(timePatterns) {
 function createCommunicatorsChart(communicators) {
     const ctx = document.getElementById('communicatorsChart').getContext('2d');
     
+    // Destroy existing chart if present to avoid canvas reuse errors
+    if (communicatorsChart) {
+        try { communicatorsChart.destroy(); } catch (e) { /* ignore */ }
+        communicatorsChart = null;
+    }
+
     const topInitiators = communicators.initiators.slice(0, 5);
     const topRecipients = communicators.recipients.slice(0, 5);
     
@@ -424,7 +458,91 @@ function createCommunicatorsChart(communicators) {
 
 function refreshData() {
     loadData();
-        }
+}
+
+async function uploadDataset(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+        showLoading();
+        const formData = new FormData();
+        formData.append('file', file);
+        const resp = await fetch('/api/upload-data', { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (!resp.ok || !data.success) throw new Error(data.error || 'Upload failed');
+        showAlert(`✅ ${data.message}`, 'success');
+        await loadOverview();
+        await loadSuspiciousActivities();
+        await loadCharts();
+    } catch (e) {
+        showAlert(`❌ Error uploading dataset: ${e.message}`, 'danger');
+    } finally {
+        hideLoading();
+        event.target.value = '';
+    }
+}
+
+async function generateDataset() {
+    try {
+        showLoading();
+        const resp = await fetch('/api/generate-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ num_records: 15000, days_span: 30 })
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.success) throw new Error(data.error || 'Generation failed');
+        showAlert(`✅ ${data.message}`, 'success');
+        await loadOverview();
+        await loadSuspiciousActivities();
+        await loadCharts();
+    } catch (e) {
+        showAlert(`❌ Error generating dataset: ${e.message}`, 'danger');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function refreshDatasetList() {
+    try {
+        const resp = await fetch('/api/datasets');
+        const data = await resp.json();
+        if (!resp.ok || !data.success) return;
+        const sel = document.getElementById('dataset-selector');
+        sel.innerHTML = '';
+        data.datasets.forEach(ds => {
+            const opt = document.createElement('option');
+            opt.value = ds.path;
+            opt.textContent = `${ds.name} (${Math.round(ds.size/1024)} KB)`;
+            if (data.current && data.current === ds.path) opt.selected = true;
+            sel.appendChild(opt);
+        });
+    } catch(e) { /* ignore */ }
+}
+
+async function activateSelectedDataset() {
+    try {
+        const sel = document.getElementById('dataset-selector');
+        if (!sel.value) return;
+        showLoading();
+        const resp = await fetch('/api/activate-dataset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: sel.value })
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.success) throw new Error(data.error || 'Activation failed');
+        showAlert(`✅ ${data.message}`, 'success');
+        await loadOverview();
+        await loadSuspiciousActivities();
+        await loadCharts();
+        await refreshDatasetList();
+    } catch (e) {
+        showAlert(`❌ Error activating dataset: ${e.message}`, 'danger');
+    } finally {
+        hideLoading();
+    }
+}
     </script>
     
     <style>
@@ -449,5 +567,12 @@ function refreshData() {
     .feature-card:hover i {
         transform: scale(1.1);
     }
+    
+    /* Make dataset selector readable */
+    .dataset-select {
+        color: #000000 !important;
+        background-color: #ffffff !important;
+    }
+    .dataset-select option { color: #000000; }
     </style>
 {% endblock %}
