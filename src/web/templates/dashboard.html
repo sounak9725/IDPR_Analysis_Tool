@@ -151,6 +151,63 @@
         </div>
     </div>
 </div>
+
+<!-- Enhanced Features Showcase -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2"></i>
+                    Enhanced Features for Law Enforcement
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card feature-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                                <h6>Enhanced B-Party Analysis</h6>
+                                <p class="small">Advanced IP geolocation, carrier identification, and comprehensive risk scoring for B-party communications.</p>
+                                <a href="/enhanced-analysis" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-arrow-right me-1"></i>
+                                    Explore
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card feature-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-filter fa-3x text-success mb-3"></i>
+                                <h6>Advanced Filtering System</h6>
+                                <p class="small">Relevance scoring, noise reduction, and custom filter templates for focused investigation data.</p>
+                                <a href="/advanced-filtering" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-arrow-right me-1"></i>
+                                    Explore
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card feature-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-folder-open fa-3x text-warning mb-3"></i>
+                                <h6>Case Management System</h6>
+                                <p class="small">Complete investigation tracking, evidence management, and suspect profiling with audit trails.</p>
+                                <a href="/case-management" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-arrow-right me-1"></i>
+                                    Explore
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -287,7 +344,7 @@ function createTimeChart(timePatterns) {
             plugins: {
                 legend: {
                     labels: {
-                        color: '#ecf0f1'
+                        color: '#ffffff'
                     }
                 }
             },
@@ -296,7 +353,7 @@ function createTimeChart(timePatterns) {
                     beginAtZero: true,
                     max: 3,
                     ticks: {
-                        color: '#ecf0f1',
+                        color: '#ffffff',
                         callback: function(value) {
                             if (value === 3) return 'Peak';
                             if (value === 1) return 'Quiet';
@@ -344,7 +401,7 @@ function createCommunicatorsChart(communicators) {
             plugins: {
                 legend: {
                     labels: {
-                        color: '#ecf0f1'
+                        color: '#ffffff'
                     }
                 }
             },
@@ -352,12 +409,12 @@ function createCommunicatorsChart(communicators) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        color: '#ecf0f1'
+                        color: '#ffffff'
                     }
                 },
                 x: {
                     ticks: {
-                        color: '#ecf0f1'
+                        color: '#ffffff'
                     }
                 }
             }
@@ -367,6 +424,30 @@ function createCommunicatorsChart(communicators) {
 
 function refreshData() {
     loadData();
-}
-</script>
+        }
+    </script>
+    
+    <style>
+    .feature-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .feature-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .feature-card i {
+        transition: transform 0.2s ease;
+    }
+    
+    .feature-card:hover i {
+        transform: scale(1.1);
+    }
+    </style>
 {% endblock %}

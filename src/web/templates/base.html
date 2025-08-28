@@ -23,7 +23,7 @@
             --warning-color: #f39c12;
             --dark-bg: #1a1a1a;
             --card-bg: #2d2d2d;
-            --text-light: #ecf0f1;
+            --text-light: #ffffff;
         }
         
         body {
@@ -169,6 +169,206 @@
             padding: 1rem 0;
             margin-top: 3rem;
         }
+        
+        /* Ensure all text is white and visible */
+        body, body * {
+            color: var(--text-light) !important;
+        }
+        
+        /* Override any Bootstrap text colors */
+        .text-muted, .text-secondary {
+            color: var(--text-light) !important;
+            opacity: 0.8;
+        }
+        
+        /* Ensure form elements have white text */
+        input, textarea, select {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure table text is white */
+        table, th, td {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure list text is white */
+        ul, ol, li {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure paragraph text is white */
+        p {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure heading text is white */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure label text is white */
+        label {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure small text is white */
+        small {
+            color: var(--text-light) !important;
+            opacity: 0.8;
+        }
+        
+        /* Ensure span text is white */
+        span {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure div text is white */
+        div {
+            color: var(--text-light) !important;
+        }
+        
+        /* Override all Chart.js text colors to white */
+        canvas {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure all chart text elements are white */
+        .chartjs-chart * {
+            color: var(--text-light) !important;
+        }
+        
+        /* Override any remaining Bootstrap or default text colors */
+        .text-dark, .text-body {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure form labels and inputs are white */
+        .form-label, .form-control, .form-select {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure table text is white */
+        .table, .table th, .table td {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure modal text is white */
+        .modal-title, .modal-body, .modal-footer {
+            color: var(--text-light) !important;
+        }
+        
+        /* Override modal text colors for better visibility */
+        .modal-content {
+            color: #000000 !important;
+        }
+        
+        .modal-content .modal-title,
+        .modal-content .modal-body,
+        .modal-content .modal-footer,
+        .modal-content label,
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select,
+        .modal-content .form-label,
+        .modal-content .form-control,
+        .modal-content .form-select {
+            color: #000000 !important;
+        }
+        
+        /* Ensure modal buttons have proper text color */
+        .modal-content .btn {
+            color: inherit !important;
+        }
+        
+        .modal-content .btn-secondary {
+            color: #ffffff !important;
+        }
+        
+        .modal-content .btn-primary {
+            color: #ffffff !important;
+        }
+        
+        /* Additional modal styling for better visibility */
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+            background-color: #ffffff !important;
+        }
+        
+        .modal-header .modal-title {
+            color: #000000 !important;
+        }
+        
+        /* Ensure form elements in modals are readable */
+        .modal .form-control::placeholder {
+            color: #6c757d !important;
+        }
+        
+        .modal .form-control:focus {
+            color: #000000 !important;
+        }
+        
+        /* Override any conflicting Bootstrap modal styles */
+        .modal.show .modal-dialog {
+            color: #000000 !important;
+        }
+        
+        /* Ensure alert text is white */
+        .alert {
+            color: var(--text-light) !important;
+        }
+        
+        /* Ensure badge text is white */
+        .badge {
+            color: var(--text-light) !important;
+        }
+        
+        /* Network controls specific styling for better visibility */
+        .network-controls,
+        .network-controls *,
+        .network-controls label,
+        .network-controls .form-label {
+            color: #000000 !important;
+        }
+        
+        /* Network form controls with white backgrounds */
+        .network-controls .form-control,
+        .network-controls .form-select,
+        .network-controls input,
+        .network-controls select {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        
+        /* Network control labels and text */
+        .network-controls h5,
+        .network-controls h6,
+        .network-controls p,
+        .network-controls span,
+        .network-controls div {
+            color: #000000 !important;
+        }
+        
+        /* Network statistics cards - keep white text on dark background */
+        .network-stats .stat-card,
+        .network-stats .stat-number,
+        .network-stats .stat-label {
+            color: var(--text-light) !important;
+        }
+        
+        /* Override for any network-related form elements */
+        .network-page .form-control,
+        .network-page .form-select,
+        .network-page input,
+        .network-page select {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        
+        .network-page label,
+        .network-page .form-label {
+            color: #000000 !important;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
@@ -192,6 +392,24 @@
                         <a class="nav-link" href="/">
                             <i class="fas fa-tachometer-alt me-1"></i>
                             Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/enhanced-analysis">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Enhanced Analysis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/advanced-filtering">
+                            <i class="fas fa-filter me-1"></i>
+                            Advanced Filtering
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/case-management">
+                            <i class="fas fa-folder-open me-1"></i>
+                            Case Management
                         </a>
                     </li>
                     <li class="nav-item">
@@ -272,6 +490,14 @@
             if (seconds < 60) return `${seconds}s`;
             if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
             return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+        }
+        
+        // Global Chart.js configuration to ensure white text
+        if (typeof Chart !== 'undefined') {
+            Chart.defaults.color = '#ffffff';
+            Chart.defaults.plugins.legend.labels.color = '#ffffff';
+            Chart.defaults.scales.x.ticks.color = '#ffffff';
+            Chart.defaults.scales.y.ticks.color = '#ffffff';
         }
     </script>
     

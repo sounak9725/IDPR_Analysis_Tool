@@ -1,0 +1,204 @@
+[
+  {
+    "id": "0ff39744-25ac-48a7-960c-0ba155b49aa9",
+    "timestamp": "2025-08-28T01:01:47.895532",
+    "event_type": "case_created",
+    "description": "Case IPDR-2024-001 created: Suspicious Communication Network Investigation",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "case_number": "IPDR-2024-001",
+      "priority": "high"
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "9872eb2b-845c-46e4-828f-30280a14aaf9",
+    "timestamp": "2025-08-28T01:01:47.898533",
+    "event_type": "investigation_step_added",
+    "description": "Investigation step added: Initial Data Analysis",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "step_id": "50fe97f3-fcaf-4466-8a8c-3928c43c9bed",
+      "step_number": 1
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "969ef07a-1f42-48f8-9c12-1b555dffe9b4",
+    "timestamp": "2025-08-28T01:01:47.900038",
+    "event_type": "investigation_step_added",
+    "description": "Investigation step added: B-Party Analysis",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "step_id": "952f4c55-e6a7-4965-a518-63ed571b276c",
+      "step_number": 2
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "7c8e7543-ce5b-460e-bb34-baebf02f988d",
+    "timestamp": "2025-08-28T01:01:47.902045",
+    "event_type": "investigation_step_added",
+    "description": "Investigation step added: Network Mapping",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "step_id": "bcc2935d-adc8-4e6a-9833-6daca6d98b39",
+      "step_number": 3
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "ab76a767-3b58-42f5-a2fd-e96f8eef630a",
+    "timestamp": "2025-08-28T01:01:47.903051",
+    "event_type": "evidence_added",
+    "description": "Evidence added: IPDR Log Analysis Results",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "evidence_id": "256e2631-d3d1-4f68-ac34-f4275e725dfd",
+      "evidence_type": "ipdr_record"
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "bddd8de8-9819-4121-bcd3-d7191f3a720a",
+    "timestamp": "2025-08-28T01:01:47.905046",
+    "event_type": "evidence_added",
+    "description": "Evidence added: Network Visualization",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "evidence_id": "1dd008bb-8d80-4c42-912c-59552e305c62",
+      "evidence_type": "network_analysis"
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "62cbacbb-9575-4624-b30f-381cfd53c127",
+    "timestamp": "2025-08-28T01:01:47.907043",
+    "event_type": "suspect_added",
+    "description": "Suspect added: 919876543210",
+    "user": "system",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "suspect_id": "da5c4594-e721-484b-bfaf-42a1278b94fa",
+      "identifier": "919876543210",
+      "risk_score": 85.0
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "1e99982d-b365-420d-9e37-5cc9cd67d7c5",
+    "timestamp": "2025-08-28T01:01:47.909383",
+    "event_type": "suspect_added",
+    "description": "Suspect added: 192.168.1.100",
+    "user": "system",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "suspect_id": "4c432dd9-6aee-4d1d-8039-5fb7265022e2",
+      "identifier": "192.168.1.100",
+      "risk_score": 72.0
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "99893932-3348-4c70-afd7-1213fbe17a45",
+    "timestamp": "2025-08-28T01:01:47.910378",
+    "event_type": "investigation_step_updated",
+    "description": "Investigation step updated: Initial Data Analysis - completed",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "step_id": "50fe97f3-fcaf-4466-8a8c-3928c43c9bed",
+      "status": "completed",
+      "evidence_collected": [
+        "256e2631-d3d1-4f68-ac34-f4275e725dfd"
+      ]
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "5385fca4-3474-4a90-bdaa-6c6876b7474a",
+    "timestamp": "2025-08-28T01:01:47.912378",
+    "event_type": "investigation_step_updated",
+    "description": "Investigation step updated: B-Party Analysis - in_progress",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "step_id": "952f4c55-e6a7-4965-a518-63ed571b276c",
+      "status": "in_progress",
+      "evidence_collected": []
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "999e34f0-f114-479f-91ab-15cebda2f3e9",
+    "timestamp": "2025-08-28T01:01:47.913378",
+    "event_type": "case_status_updated",
+    "description": "Case status changed from CaseStatus.OPEN to in_progress",
+    "user": "Detective Smith",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "old_status": "CaseStatus.OPEN",
+      "new_status": "in_progress",
+      "notes": "Investigation is now in progress with initial analysis complete"
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "38571f64-c493-4166-954b-15439c8035b3",
+    "timestamp": "2025-08-28T01:01:47.915378",
+    "event_type": "case_exported",
+    "description": "Case data exported in json format",
+    "user": "system",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "details": {
+      "export_format": "json",
+      "file_path": "data\\cases\\exports\\case_af112af9-ef35-4866-9fa1-6cbaaa103e29_20250828_010147.json"
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "59d2778d-86e8-44d9-afdf-6c259318ba75",
+    "timestamp": "2025-08-28T01:01:52.157137",
+    "event_type": "case_created",
+    "description": "Case IPDR-2024-002 created: High-Risk B-Party Investigation",
+    "user": "System Analyst",
+    "case_id": "2d1b9e21-8b8e-4c24-981b-889252b666ec",
+    "details": {
+      "case_number": "IPDR-2024-002",
+      "priority": "critical"
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "6a4ffef1-f34d-4055-9182-404543e0759d",
+    "timestamp": "2025-08-28T02:11:10.003096",
+    "event_type": "case_created",
+    "description": "Case CASE-20250828-003 created: Test Case",
+    "user": "Web Dashboard",
+    "case_id": "ccb979bc-7262-4a4a-9be7-ec9fd4578b9c",
+    "details": {
+      "case_number": "CASE-20250828-003",
+      "priority": "medium"
+    },
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": "7b28dfa0-5459-4b28-8499-8baf87f7b808",
+    "timestamp": "2025-08-28T02:18:29.275657",
+    "event_type": "case_created",
+    "description": "Case CASE-20250828-004 created: Another Test Case",
+    "user": "Web Dashboard",
+    "case_id": "19c8f66f-e222-481b-a710-29fe4c6a27b2",
+    "details": {
+      "case_number": "CASE-20250828-004",
+      "priority": "high"
+    },
+    "ip_address": "127.0.0.1"
+  }
+]

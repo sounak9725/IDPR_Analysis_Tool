@@ -1,0 +1,91 @@
+{
+  "case_info": {
+    "id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "case_number": "IPDR-2024-001",
+    "title": "Suspicious Communication Network Investigation",
+    "description": "Investigation into suspicious communication patterns detected in IPDR logs",
+    "status": "in_progress",
+    "priority": "PriorityLevel.HIGH",
+    "created_by": "Detective Smith",
+    "created_at": "2025-08-28 01:01:47.895532",
+    "assigned_to": "Detective Smith",
+    "updated_at": "2025-08-28T01:01:47.912378",
+    "closed_at": null,
+    "tags": [
+      "suspicious_activity",
+      "network_analysis",
+      "high_priority"
+    ],
+    "notes": "\n[2025-08-28 01:01:47] Investigation is now in progress with initial analysis complete",
+    "legal_hold": false,
+    "retention_policy": "standard"
+  },
+  "statistics": {
+    "total_evidence": 2,
+    "total_steps": 3,
+    "completed_steps": 1,
+    "completion_percentage": 33.33,
+    "total_suspects": 2,
+    "high_risk_suspects": 2
+  },
+  "evidence_summary": [
+    {
+      "id": "256e2631-d3d1-4f68-ac34-f4275e725dfd",
+      "type": "EvidenceType.IPDR_RECORD",
+      "title": "IPDR Log Analysis Results",
+      "collected_at": "2025-08-28 01:01:47.903051",
+      "collected_by": "Detective Smith"
+    },
+    {
+      "id": "1dd008bb-8d80-4c42-912c-59552e305c62",
+      "type": "EvidenceType.NETWORK_ANALYSIS",
+      "title": "Network Visualization",
+      "collected_at": "2025-08-28 01:01:47.904045",
+      "collected_by": "Detective Smith"
+    }
+  ],
+  "investigation_progress": [
+    {
+      "step_number": 1,
+      "title": "Initial Data Analysis",
+      "status": "completed",
+      "assigned_to": "Detective Smith",
+      "started_at": null,
+      "completed_at": "2025-08-28T01:01:47.910378"
+    },
+    {
+      "step_number": 2,
+      "title": "B-Party Analysis",
+      "status": "in_progress",
+      "assigned_to": "Detective Smith",
+      "started_at": "2025-08-28T01:01:47.911378",
+      "completed_at": null
+    },
+    {
+      "step_number": 3,
+      "title": "Network Mapping",
+      "status": "pending",
+      "assigned_to": "Detective Smith",
+      "started_at": null,
+      "completed_at": null
+    }
+  ],
+  "suspects_summary": [
+    {
+      "id": "da5c4594-e721-484b-bfaf-42a1278b94fa",
+      "identifier": "919876543210",
+      "identifier_type": "mobile",
+      "name": "Unknown Subject 1",
+      "risk_score": 85.0,
+      "total_communications": 0
+    },
+    {
+      "id": "4c432dd9-6aee-4d1d-8039-5fb7265022e2",
+      "identifier": "192.168.1.100",
+      "identifier_type": "ip",
+      "name": "Unknown Subject 2",
+      "risk_score": 72.0,
+      "total_communications": 0
+    }
+  ]
+}

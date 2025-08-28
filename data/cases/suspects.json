@@ -1,0 +1,32 @@
+{
+  "da5c4594-e721-484b-bfaf-42a1278b94fa": {
+    "id": "da5c4594-e721-484b-bfaf-42a1278b94fa",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "identifier": "919876543210",
+    "identifier_type": "mobile",
+    "name": "Unknown Subject 1",
+    "aliases": [],
+    "risk_score": 85.0,
+    "first_seen": null,
+    "last_seen": null,
+    "total_communications": 0,
+    "suspicious_indicators": [],
+    "relationships": [],
+    "notes": ""
+  },
+  "4c432dd9-6aee-4d1d-8039-5fb7265022e2": {
+    "id": "4c432dd9-6aee-4d1d-8039-5fb7265022e2",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "identifier": "192.168.1.100",
+    "identifier_type": "ip",
+    "name": "Unknown Subject 2",
+    "aliases": [],
+    "risk_score": 72.0,
+    "first_seen": null,
+    "last_seen": null,
+    "total_communications": 0,
+    "suspicious_indicators": [],
+    "relationships": [],
+    "notes": ""
+  }
+}

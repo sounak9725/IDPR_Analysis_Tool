@@ -1,0 +1,78 @@
+{
+  "af112af9-ef35-4866-9fa1-6cbaaa103e29": {
+    "id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "case_number": "IPDR-2024-001",
+    "title": "Suspicious Communication Network Investigation",
+    "description": "Investigation into suspicious communication patterns detected in IPDR logs",
+    "status": "in_progress",
+    "priority": "PriorityLevel.HIGH",
+    "created_by": "Detective Smith",
+    "created_at": "2025-08-28 01:01:47.895532",
+    "assigned_to": "Detective Smith",
+    "updated_at": "2025-08-28T01:01:47.912378",
+    "closed_at": null,
+    "tags": [
+      "suspicious_activity",
+      "network_analysis",
+      "high_priority"
+    ],
+    "notes": "\n[2025-08-28 01:01:47] Investigation is now in progress with initial analysis complete",
+    "legal_hold": false,
+    "retention_policy": "standard"
+  },
+  "2d1b9e21-8b8e-4c24-981b-889252b666ec": {
+    "id": "2d1b9e21-8b8e-4c24-981b-889252b666ec",
+    "case_number": "IPDR-2024-002",
+    "title": "High-Risk B-Party Investigation",
+    "description": "Investigation into high-risk B-parties identified through enhanced analysis",
+    "status": "CaseStatus.OPEN",
+    "priority": "PriorityLevel.CRITICAL",
+    "created_by": "System Analyst",
+    "created_at": "2025-08-28 01:01:52.156138",
+    "assigned_to": "",
+    "updated_at": "2025-08-28 01:01:52.156138",
+    "closed_at": null,
+    "tags": [
+      "high_risk",
+      "bparty_analysis",
+      "automated"
+    ],
+    "notes": "",
+    "legal_hold": false,
+    "retention_policy": "standard"
+  },
+  "ccb979bc-7262-4a4a-9be7-ec9fd4578b9c": {
+    "id": "ccb979bc-7262-4a4a-9be7-ec9fd4578b9c",
+    "case_number": "CASE-20250828-003",
+    "title": "Test Case",
+    "description": "Testing case creation",
+    "status": "CaseStatus.OPEN",
+    "priority": "PriorityLevel.MEDIUM",
+    "created_by": "Web Dashboard",
+    "created_at": "2025-08-28 02:11:10.003096",
+    "assigned_to": "",
+    "updated_at": "2025-08-28 02:11:10.003096",
+    "closed_at": null,
+    "tags": [],
+    "notes": "",
+    "legal_hold": false,
+    "retention_policy": "standard"
+  },
+  "19c8f66f-e222-481b-a710-29fe4c6a27b2": {
+    "id": "19c8f66f-e222-481b-a710-29fe4c6a27b2",
+    "case_number": "CASE-20250828-004",
+    "title": "Another Test Case",
+    "description": "Testing case creation again",
+    "status": "CaseStatus.OPEN",
+    "priority": "PriorityLevel.HIGH",
+    "created_by": "Web Dashboard",
+    "created_at": "2025-08-28 02:18:29.275657",
+    "assigned_to": "",
+    "updated_at": "2025-08-28 02:18:29.275657",
+    "closed_at": null,
+    "tags": [],
+    "notes": "",
+    "legal_hold": false,
+    "retention_policy": "standard"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "256e2631-d3d1-4f68-ac34-f4275e725dfd": {
+    "id": "256e2631-d3d1-4f68-ac34-f4275e725dfd",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "evidence_type": "EvidenceType.IPDR_RECORD",
+    "title": "IPDR Log Analysis Results",
+    "description": "Results of suspicious activity detection in IPDR logs",
+    "file_path": null,
+    "metadata": {
+      "total_records": 1000,
+      "suspicious_records": 45,
+      "analysis_timestamp": "2025-08-28T01:01:47.903051"
+    },
+    "collected_by": "Detective Smith",
+    "collected_at": "2025-08-28 01:01:47.903051",
+    "chain_of_custody": [],
+    "hash_value": null,
+    "is_verified": false
+  },
+  "1dd008bb-8d80-4c42-912c-59552e305c62": {
+    "id": "1dd008bb-8d80-4c42-912c-59552e305c62",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "evidence_type": "EvidenceType.NETWORK_ANALYSIS",
+    "title": "Network Visualization",
+    "description": "Interactive network graph showing communication relationships",
+    "file_path": "outputs/visualizations/network_analysis.png",
+    "metadata": {},
+    "collected_by": "Detective Smith",
+    "collected_at": "2025-08-28 01:01:47.904045",
+    "chain_of_custody": [],
+    "hash_value": null,
+    "is_verified": false
+  }
+}

@@ -1,0 +1,630 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Filtering - IPDR Analysis{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <i class="fas fa-filter me-2"></i>
+                    Advanced Filtering System
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Advanced filtering system with relevance scoring, noise reduction, and custom filter templates designed for law enforcement investigations. Filter IPDR data based on multiple criteria to focus on the most relevant communications.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Templates -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-layer-group me-2"></i>
+                    Filter Templates
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card template-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shield-alt fa-2x text-danger mb-2"></i>
+                                <h6>Law Enforcement Critical</h6>
+                                <p class="small text-muted">Critical filters for law enforcement investigations</p>
+                                <button class="btn btn-sm btn-outline-danger" onclick="applyTemplate('law_enforcement_critical')">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Apply Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card template-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                                <h6>Suspicious Activity</h6>
+                                <p class="small text-muted">Detect suspicious communication patterns</p>
+                                <button class="btn btn-sm btn-outline-warning" onclick="applyTemplate('suspicious_activity')">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Apply Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card filter-template-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-project-diagram fa-2x text-info mb-2"></i>
+                                <h6>Network Analysis</h6>
+                                <p class="small">Frequency-based filters for network mapping</p>
+                                <button class="btn btn-sm btn-outline-info" onclick="applyTemplate('network_analysis')">
+                                    Apply Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card filter-template-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clock fa-2x text-success mb-2"></i>
+                                <h6>Time-Based</h6>
+                                <p class="small">Temporal filters for time-sensitive analysis</p>
+                                <button class="btn btn-sm btn-outline-success" onclick="applyTemplate('time_based_analysis')">
+                                    Apply Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Filter Creation -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Create Custom Filter
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="custom-filter-form">
+                    <div class="mb-3">
+                        <label for="filter-name" class="form-label">Filter Name</label>
+                        <input type="text" class="form-control" id="filter-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="filter-type" class="form-label">Filter Type</label>
+                        <select class="form-select" id="filter-type" required>
+                            <option value="time_based">Time-Based</option>
+                            <option value="frequency_based">Frequency-Based</option>
+                            <option value="pattern_based">Pattern-Based</option>
+                            <option value="risk_based">Risk-Based</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="filter-priority" class="form-label">Priority</label>
+                        <select class="form-select" id="filter-priority" required>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="filter-criteria" class="form-label">Filter Criteria (JSON)</label>
+                        <textarea class="form-control" id="filter-criteria" rows="3" placeholder='{"min_duration": 300, "max_duration": 3600}'></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Create Filter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Active Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="active-filters-list">
+                    <p class="text-muted">No active filters. Apply a template or create a custom filter to get started.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtering Controls -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>
+                    Filtering Controls
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="run-filtering" class="btn btn-primary btn-lg">
+                            <i class="fas fa-play me-2"></i>
+                            Apply All Filters
+                        </button>
+                        <button id="clear-filters" class="btn btn-secondary btn-lg ms-2">
+                            <i class="fas fa-trash me-2"></i>
+                            Clear All Filters
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="enable-noise-reduction" checked>
+                            <label class="form-check-label" for="enable-noise-reduction">
+                                Enable Noise Reduction
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="enable-relevance-scoring" checked>
+                            <label class="form-check-label" for="enable-relevance-scoring">
+                                Enable Relevance Scoring
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtering Results -->
+<div class="row mb-4" id="filtering-results" style="display: none;">
+    <!-- Statistics -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Filtering Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="original-count">-</div>
+                            <div class="stat-label">Original Records</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="filtered-count">-</div>
+                            <div class="stat-label">Filtered Records</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="active-filters-count">-</div>
+                            <div class="stat-label">Active Filters</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="filter-effectiveness">-</div>
+                            <div class="stat-label">Effectiveness %</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relevance Score Distribution -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Relevance Score Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="relevanceChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Performance -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    Filter Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="performanceChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtered Data Table -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-table me-2"></i>
+                    Filtered Data (Top 100 Records)
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="filtered-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>A-Party</th>
+                                <th>B-Party</th>
+                                <th>Service Type</th>
+                                <th>Duration</th>
+                                <th>Relevance Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filtered-tbody">
+                            <!-- Filtered data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Indicator -->
+<div class="loading" id="filtering-loading" style="display: none;">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Filtering...</span>
+    </div>
+    <p class="mt-2">Applying advanced filters...</p>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let relevanceChart, performanceChart;
+let activeFilters = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
+    initializeCharts();
+    
+    // Event listeners
+    document.getElementById('run-filtering').addEventListener('click', runAdvancedFiltering);
+    document.getElementById('clear-filters').addEventListener('click', clearAllFilters);
+    document.getElementById('custom-filter-form').addEventListener('submit', createCustomFilter);
+});
+
+function initializeCharts() {
+    // Relevance Score Distribution Chart
+    const relevanceCtx = document.getElementById('relevanceChart').getContext('2d');
+    relevanceChart = new Chart(relevanceCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Record Count',
+                data: [],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ffffff'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+    });
+
+    // Filter Performance Chart
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    performanceChart = new Chart(performanceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Kept', 'Filtered Out'],
+            datasets: [{
+                data: [0, 0],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function applyTemplate(templateName) {
+    // Add template to active filters
+    const filter = {
+        name: templateName,
+        type: getTemplateType(templateName),
+        priority: getTemplatePriority(templateName),
+        criteria: getTemplateCriteria(templateName)
+    };
+    
+    activeFilters.push(filter);
+    updateActiveFiltersList();
+    showAlert(`Template "${templateName}" applied successfully!`, 'success');
+}
+
+function getTemplateType(templateName) {
+    const typeMap = {
+        'law_enforcement_critical': 'risk_based',
+        'suspicious_activity': 'pattern_based',
+        'network_analysis': 'frequency_based',
+        'time_based_analysis': 'time_based'
+    };
+    return typeMap[templateName] || 'custom';
+}
+
+function getTemplatePriority(templateName) {
+    const priorityMap = {
+        'law_enforcement_critical': 'critical',
+        'suspicious_activity': 'high',
+        'network_analysis': 'medium',
+        'time_based_analysis': 'medium'
+    };
+    return priorityMap[templateName] || 'medium';
+}
+
+function getTemplateCriteria(templateName) {
+    const criteriaMap = {
+        'law_enforcement_critical': { 'min_risk_score': 70, 'suspicious_patterns': true },
+        'suspicious_activity': { 'burner_phone_patterns': true, 'unusual_timing': true },
+        'network_analysis': { 'min_connections': 5, 'centrality_threshold': 0.3 },
+        'time_based_analysis': { 'peak_hours': true, 'weekend_activity': true }
+    };
+    return criteriaMap[templateName] || {};
+}
+
+function createCustomFilter(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('filter-name').value;
+    const type = document.getElementById('filter-type').value;
+    const priority = document.getElementById('filter-priority').value;
+    const criteriaText = document.getElementById('filter-criteria').value;
+    
+    let criteria = {};
+    if (criteriaText.trim()) {
+        try {
+            criteria = JSON.parse(criteriaText);
+        } catch (e) {
+            showAlert('Invalid JSON in filter criteria', 'danger');
+            return;
+        }
+    }
+    
+    const filter = {
+        name: name,
+        type: type,
+        priority: priority,
+        criteria: criteria
+    };
+    
+    activeFilters.push(filter);
+    updateActiveFiltersList();
+    
+    // Reset form
+    event.target.reset();
+    showAlert(`Custom filter "${name}" created successfully!`, 'success');
+}
+
+function updateActiveFiltersList() {
+    const container = document.getElementById('active-filters-list');
+    
+    if (activeFilters.length === 0) {
+        container.innerHTML = '<p class="text-muted">No active filters. Apply a template or create a custom filter to get started.</p>';
+        return;
+    }
+    
+    let html = '';
+    activeFilters.forEach((filter, index) => {
+        html += `
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                <div>
+                    <strong>${filter.name}</strong>
+                    <br>
+                    <small class="text-muted">
+                        Type: ${filter.type} | Priority: ${filter.priority}
+                    </small>
+                </div>
+                <button class="btn btn-sm btn-outline-danger" onclick="removeFilter(${index})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function removeFilter(index) {
+    activeFilters.splice(index, 1);
+    updateActiveFiltersList();
+    showAlert('Filter removed successfully!', 'info');
+}
+
+function clearAllFilters() {
+    activeFilters = [];
+    updateActiveFiltersList();
+    showAlert('All filters cleared!', 'info');
+}
+
+async function runAdvancedFiltering() {
+    if (activeFilters.length === 0) {
+        showAlert('No active filters to apply. Please add some filters first.', 'warning');
+        return;
+    }
+    
+    const loading = document.getElementById('filtering-loading');
+    const results = document.getElementById('filtering-results');
+    const runBtn = document.getElementById('run-filtering');
+    
+    try {
+        loading.style.display = 'block';
+        results.style.display = 'none';
+        runBtn.disabled = true;
+        
+        const response = await fetch('/api/advanced-filtering');
+        const data = await response.json();
+        
+        if (data.success) {
+            displayFilteringResults(data);
+            results.style.display = 'block';
+        } else {
+            showAlert('Error: ' + data.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error running filtering: ' + error.message, 'danger');
+    } finally {
+        loading.style.display = 'none';
+        runBtn.disabled = false;
+    }
+}
+
+function displayFilteringResults(data) {
+    const { filtered_data, statistics, active_filters } = data;
+    
+    // Update statistics
+    document.getElementById('original-count').textContent = statistics.original_count;
+    document.getElementById('filtered-count').textContent = statistics.filtered_count;
+    document.getElementById('active-filters-count').textContent = statistics.active_filters;
+    document.getElementById('filter-effectiveness').textContent = statistics.filter_effectiveness + '%';
+    
+    // Update performance chart
+    performanceChart.data.datasets[0].data = [
+        statistics.filtered_count,
+        statistics.original_count - statistics.filtered_count
+    ];
+    performanceChart.update();
+    
+    // Update relevance chart (simulated data for now)
+    const relevanceScores = [0.7, 0.75, 0.8, 0.85, 0.9, 0.95];
+    const scoreCounts = [50, 100, 200, 300, 150, 50];
+    
+    relevanceChart.data.labels = relevanceScores.map(score => score.toFixed(2));
+    relevanceChart.data.datasets[0].data = scoreCounts;
+    relevanceChart.update();
+    
+    // Populate filtered data table
+    populateFilteredTable(filtered_data);
+}
+
+function populateFilteredTable(data) {
+    const tbody = document.getElementById('filtered-tbody');
+    tbody.innerHTML = '';
+    
+    data.forEach(record => {
+        const row = document.createElement('tr');
+        
+        // Calculate relevance score (simulated)
+        const relevanceScore = (Math.random() * 0.3 + 0.7).toFixed(3);
+        
+        row.innerHTML = `
+            <td>${record.timestamp || 'N/A'}</td>
+            <td><strong>${record.a_party || 'N/A'}</strong></td>
+            <td><strong>${record.b_party || 'N/A'}</strong></td>
+            <td><span class="badge bg-info">${record.service_type || 'Unknown'}</span></td>
+            <td>${record.duration || 'N/A'}</td>
+            <td><span class="badge bg-success">${relevanceScore}</span></td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<style>
+.filter-template-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.filter-template-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,46 @@
+{
+  "50fe97f3-fcaf-4466-8a8c-3928c43c9bed": {
+    "id": "50fe97f3-fcaf-4466-8a8c-3928c43c9bed",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "step_number": 1,
+    "title": "Initial Data Analysis",
+    "description": "Analyze IPDR logs for suspicious patterns",
+    "status": "completed",
+    "assigned_to": "Detective Smith",
+    "started_at": null,
+    "completed_at": "2025-08-28T01:01:47.910378",
+    "notes": "Focus on high-frequency communications and unusual timing patterns\n[2025-08-28 01:01:47] Completed initial analysis. Found 45 suspicious records.",
+    "evidence_collected": [
+      "256e2631-d3d1-4f68-ac34-f4275e725dfd"
+    ],
+    "next_steps": []
+  },
+  "952f4c55-e6a7-4965-a518-63ed571b276c": {
+    "id": "952f4c55-e6a7-4965-a518-63ed571b276c",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "step_number": 2,
+    "title": "B-Party Analysis",
+    "description": "Analyze B-party information for risk indicators",
+    "status": "in_progress",
+    "assigned_to": "Detective Smith",
+    "started_at": "2025-08-28T01:01:47.911378",
+    "completed_at": null,
+    "notes": "Use enhanced B-party analyzer to identify suspicious recipients\n[2025-08-28 01:01:47] Started B-party analysis. Using enhanced analyzer.",
+    "evidence_collected": [],
+    "next_steps": []
+  },
+  "bcc2935d-adc8-4e6a-9833-6daca6d98b39": {
+    "id": "bcc2935d-adc8-4e6a-9833-6daca6d98b39",
+    "case_id": "af112af9-ef35-4866-9fa1-6cbaaa103e29",
+    "step_number": 3,
+    "title": "Network Mapping",
+    "description": "Map communication network and identify key nodes",
+    "status": "pending",
+    "assigned_to": "Detective Smith",
+    "started_at": null,
+    "completed_at": null,
+    "notes": "Create network visualization and identify central entities",
+    "evidence_collected": [],
+    "next_steps": []
+  }
+}

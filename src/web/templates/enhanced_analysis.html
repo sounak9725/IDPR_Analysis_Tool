@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Enhanced B-Party Analysis - IPDR Analysis{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    Enhanced B-Party Analysis
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Advanced analysis of B-party (recipient) information including IP geolocation mapping, mobile number validation, carrier identification, and comprehensive risk scoring for law enforcement investigations.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analysis Controls -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>
+                    Analysis Controls
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="run-analysis" class="btn btn-primary btn-lg">
+                            <i class="fas fa-play me-2"></i>
+                            Run Enhanced Analysis
+                        </button>
+                        <button id="generate-report" class="btn btn-success btn-lg ms-2" disabled>
+                            <i class="fas fa-file-alt me-2"></i>
+                            Generate Report
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="enable-geolocation" checked>
+                            <label class="form-check-label" for="enable-geolocation">
+                                Enable IP Geolocation
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="enable-carrier" checked>
+                            <label class="form-check-label" for="enable-carrier">
+                                Enable Carrier Identification
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analysis Results -->
+<div class="row mb-4" id="analysis-results" style="display: none;">
+    <!-- Summary Statistics -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Analysis Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-bparties">-</div>
+                            <div class="stat-label">Total B-Parties</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="ip-addresses">-</div>
+                            <div class="stat-label">IP Addresses</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="mobile-numbers">-</div>
+                            <div class="stat-label">Mobile Numbers</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number suspicious-high" id="high-risk">-</div>
+                            <div class="stat-label">High Risk</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Distribution Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Risk Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="riskChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Carrier Summary Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-mobile-alt me-2"></i>
+                    Carrier Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="carrierChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Results Table -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-table me-2"></i>
+                    Detailed Analysis Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="results-table">
+                        <thead>
+                            <tr>
+                                <th>B-Party</th>
+                                <th>Type</th>
+                                <th>Carrier/ISP</th>
+                                <th>Location</th>
+                                <th>Risk Score</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody">
+                            <!-- Results will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Indicator -->
+<div class="loading" id="analysis-loading" style="display: none;">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Analyzing...</span>
+    </div>
+    <p class="mt-2">Running Enhanced B-Party Analysis...</p>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let riskChart, carrierChart;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
+    initializeCharts();
+    
+    // Event listeners
+    document.getElementById('run-analysis').addEventListener('click', runEnhancedAnalysis);
+    document.getElementById('generate-report').addEventListener('click', generateReport);
+});
+
+function initializeCharts() {
+    // Risk Distribution Chart
+    const riskCtx = document.getElementById('riskChart').getContext('2d');
+    riskChart = new Chart(riskCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+            datasets: [{
+                data: [0, 0, 0],
+                backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+    });
+
+    // Carrier Distribution Chart
+    const carrierCtx = document.getElementById('carrierChart').getContext('2d');
+    carrierChart = new Chart(carrierCtx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Count',
+                data: [],
+                backgroundColor: '#3498db',
+                borderColor: '#2980b9',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ffffff'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#ffffff'
+                    }
+                }
+            }
+        }
+    });
+}
+
+async function runEnhancedAnalysis() {
+    const loading = document.getElementById('analysis-loading');
+    const results = document.getElementById('analysis-results');
+    const runBtn = document.getElementById('run-analysis');
+    
+    try {
+        loading.style.display = 'block';
+        results.style.display = 'none';
+        runBtn.disabled = true;
+        
+        const response = await fetch('/api/enhanced-analysis');
+        const data = await response.json();
+        
+        if (data.success) {
+            displayAnalysisResults(data);
+            results.style.display = 'block';
+            document.getElementById('generate-report').disabled = false;
+        } else {
+            showAlert('Error: ' + data.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error running analysis: ' + error.message, 'danger');
+    } finally {
+        loading.style.display = 'none';
+        runBtn.disabled = false;
+    }
+}
+
+function displayAnalysisResults(data) {
+    const { analysis_results, report } = data;
+    
+    // Update summary statistics
+    document.getElementById('total-bparties').textContent = report.summary.total_bparties;
+    document.getElementById('ip-addresses').textContent = report.summary.ip_addresses;
+    document.getElementById('mobile-numbers').textContent = report.summary.mobile_numbers;
+    document.getElementById('high-risk').textContent = report.risk_distribution.high_risk;
+    
+    // Update risk chart
+    riskChart.data.datasets[0].data = [
+        report.risk_distribution.low_risk,
+        report.risk_distribution.medium_risk,
+        report.risk_distribution.high_risk
+    ];
+    riskChart.update();
+    
+    // Update carrier chart
+    const carrierData = report.carrier_summary;
+    carrierChart.data.labels = Object.keys(carrierData);
+    carrierChart.data.datasets[0].data = Object.values(carrierData);
+    carrierChart.update();
+    
+    // Populate results table
+    populateResultsTable(analysis_results);
+}
+
+function populateResultsTable(results) {
+    const tbody = document.getElementById('results-tbody');
+    tbody.innerHTML = '';
+    
+    results.forEach(result => {
+        const row = document.createElement('tr');
+        
+        let carrierInfo = 'N/A';
+        let location = 'N/A';
+        
+        if (result.type === 'mobile_number') {
+            carrierInfo = result.carrier_info?.carrier_name || 'Unknown';
+        } else if (result.type === 'ip_address') {
+            carrierInfo = result.geolocation?.isp || 'Unknown';
+            location = `${result.geolocation?.city || 'Unknown'}, ${result.geolocation?.country || 'Unknown'}`;
+        }
+        
+        const riskClass = result.risk_score >= 70 ? 'suspicious-high' : 
+                         result.risk_score >= 30 ? 'suspicious-medium' : 'suspicious-low';
+        
+        row.innerHTML = `
+            <td><strong>${result.bparty_value}</strong></td>
+            <td><span class="badge bg-primary">${result.type}</span></td>
+            <td>${carrierInfo}</td>
+            <td>${location}</td>
+            <td><span class="${riskClass}">${result.risk_score}</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline-info" onclick="showDetails('${result.bparty_value}')">
+                    <i class="fas fa-info-circle"></i> Details
+                </button>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function showDetails(bparty) {
+    // This could open a modal with detailed information
+    alert(`Detailed information for ${bparty} would be displayed here.`);
+}
+
+function generateReport() {
+    // This could generate and download a PDF report
+    alert('Report generation feature would be implemented here.');
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

@@ -11,6 +11,8 @@
     <p class="mt-2">Loading network visualization...</p>
 </div>
 
+<div class="network-page">
+
 <!-- Header -->
 <div class="row mb-4">
     <div class="col-12">
@@ -40,7 +42,7 @@
                     Network Controls
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body network-controls">
                 <div class="row">
                     <div class="col-md-3 mb-2">
                         <label class="form-label">Max Nodes</label>
@@ -83,7 +85,7 @@
 </div>
 
 <!-- Network Statistics -->
-<div class="row mb-4">
+<div class="row mb-4 network-stats">
     <div class="col-md-3 mb-3">
         <div class="card stat-card">
             <div class="stat-number" id="total-nodes">-</div>
@@ -510,4 +512,6 @@ function investigateNode(nodeId) {
     window.location.href = `/investigation?entity=${encodeURIComponent(nodeId)}`;
 }
 </script>
+
+</div>
 {% endblock %}

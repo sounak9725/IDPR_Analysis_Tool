@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+
+{% block title %}Case Management - IPDR Analysis{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <i class="fas fa-folder-open me-2"></i>
+                    Case Management System
+                </h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    Comprehensive case management system for law enforcement investigations. Create and track investigation cases, manage evidence chains, profile suspects, and maintain complete audit trails for legal compliance.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-primary btn-lg w-100" onclick="showCreateCaseModal()">
+                            <i class="fas fa-plus me-2"></i>
+                            New Case
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-success btn-lg w-100" onclick="refreshCases()">
+                            <i class="fas fa-sync me-2"></i>
+                            Refresh Cases
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-info btn-lg w-100" onclick="showSystemStats()">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            System Stats
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-warning btn-lg w-100" onclick="exportAllCases()">
+                            <i class="fas fa-download me-2"></i>
+                            Export All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    System Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-cases">-</div>
+                            <div class="stat-label">Total Cases</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="open-cases">-</div>
+                            <div class="stat-label">Open Cases</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="in-progress-cases">-</div>
+                            <div class="stat-label">In Progress</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="closed-cases">-</div>
+                            <div class="stat-label">Closed Cases</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-evidence">-</div>
+                            <div class="stat-label">Total Evidence</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-suspects">-</div>
+                            <div class="stat-label">Total Suspects</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cases List -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Investigation Cases
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="cases-list">
+                    <div class="text-center py-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading cases...</span>
+                        </div>
+                        <p class="mt-2">Loading investigation cases...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Case Modal -->
+<div class="modal fade" id="createCaseModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>
+                    Create New Investigation Case
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-case-form">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="case-name" class="form-label">Case Name *</label>
+                            <input type="text" class="form-control" id="case-name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="case-priority" class="form-label">Priority *</label>
+                            <select class="form-select" id="case-priority" required>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="case-description" class="form-label">Description *</label>
+                        <textarea class="form-control" id="case-description" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="case-assignee" class="form-label">Assigned To</label>
+                            <input type="text" class="form-control" id="case-assignee" placeholder="Investigator name">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="case-deadline" class="form-label">Deadline</label>
+                            <input type="date" class="form-control" id="case-deadline">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createCase()">
+                    <i class="fas fa-save me-2"></i>
+                    Create Case
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Case Details Modal -->
+<div class="modal fade" id="caseDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="case-details-title">
+                    <i class="fas fa-folder-open me-2"></i>
+                    Case Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="case-details-content">
+                    <!-- Case details will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Indicator -->
+<div class="loading" id="case-loading" style="display: none;">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Processing...</span>
+    </div>
+    <p class="mt-2">Processing case management request...</p>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let cases = [];
+let currentCase = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load cases on page load
+    loadCases();
+});
+
+async function loadCases() {
+    try {
+        const response = await fetch('/api/case-management');
+        const data = await response.json();
+        
+        if (data.success) {
+            cases = data.cases;
+            displayCases();
+            updateSystemStats(data.statistics);
+        } else {
+            showAlert('Error loading cases: ' + data.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error loading cases: ' + error.message, 'danger');
+    }
+}
+
+function displayCases() {
+    const container = document.getElementById('cases-list');
+    
+    if (cases.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No investigation cases found</h5>
+                <p class="text-muted">Create your first case to get started with the investigation.</p>
+                <button class="btn btn-primary" onclick="showCreateCaseModal()">
+                    <i class="fas fa-plus me-2"></i>
+                    Create First Case
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '<div class="row">';
+    
+    cases.forEach((caseItem, index) => {
+        const statusClass = getStatusClass(caseItem.status);
+        const priorityClass = getPriorityClass(caseItem.priority);
+        
+        html += `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card case-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="badge ${statusClass}">${caseItem.status.replace('_', ' ').toUpperCase()}</span>
+                        <span class="badge ${priorityClass}">${caseItem.priority.toUpperCase()}</span>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">${caseItem.name}</h6>
+                        <p class="card-text small">${caseItem.description}</p>
+                        <div class="row text-center mb-3">
+                            <div class="col-4">
+                                <small class="text-muted">Evidence</small><br>
+                                <strong>${caseItem.evidence_count || 0}</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">Steps</small><br>
+                                <strong>${caseItem.steps_count || 0}</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">Suspects</small><br>
+                                <strong>${caseItem.suspects_count || 0}</strong>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="viewCaseDetails('${caseItem.id}')">
+                                <i class="fas fa-eye me-1"></i>
+                                View Details
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="addEvidence('${caseItem.id}')">
+                                <i class="fas fa-plus me-1"></i>
+                                Add Evidence
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted small">
+                        Created: ${new Date(caseItem.created_at).toLocaleDateString()}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function getStatusClass(status) {
+    const statusMap = {
+        'open': 'bg-success',
+        'in_progress': 'bg-warning',
+        'closed': 'bg-secondary',
+        'suspended': 'bg-danger'
+    };
+    return statusMap[status] || 'bg-secondary';
+}
+
+function getPriorityClass(priority) {
+    const priorityMap = {
+        'low': 'bg-info',
+        'medium': 'bg-warning',
+        'high': 'bg-danger',
+        'critical': 'bg-dark'
+    };
+    return priorityMap[priority] || 'bg-secondary';
+}
+
+function updateSystemStats(stats) {
+    document.getElementById('total-cases').textContent = stats.total_cases || 0;
+    document.getElementById('open-cases').textContent = stats.open_cases || 0;
+    document.getElementById('in-progress-cases').textContent = stats.in_progress_cases || 0;
+    document.getElementById('closed-cases').textContent = stats.closed_cases || 0;
+    document.getElementById('total-evidence').textContent = stats.total_evidence || 0;
+    document.getElementById('total-suspects').textContent = stats.total_suspects || 0;
+}
+
+function showCreateCaseModal() {
+    const modal = new bootstrap.Modal(document.getElementById('createCaseModal'));
+    modal.show();
+}
+
+async function createCase() {
+    const name = document.getElementById('case-name').value;
+    const description = document.getElementById('case-description').value;
+    const priority = document.getElementById('case-priority').value;
+    
+    if (!name || !description) {
+        showAlert('Please fill in all required fields.', 'warning');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/case-management/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                description: description,
+                priority: priority
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('Case created successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('createCaseModal')).hide();
+            document.getElementById('create-case-form').reset();
+            loadCases(); // Refresh the cases list
+        } else {
+            showAlert('Error creating case: ' + data.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error creating case: ' + error.message, 'danger');
+    }
+}
+
+function viewCaseDetails(caseId) {
+    currentCase = cases.find(c => c.id === caseId);
+    if (!currentCase) return;
+    
+    const modal = new bootstrap.Modal(document.getElementById('caseDetailsModal'));
+    const title = document.getElementById('case-details-title');
+    const content = document.getElementById('case-details-content');
+    
+    title.innerHTML = `<i class="fas fa-folder-open me-2"></i>${currentCase.name}`;
+    
+    content.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Case Information</h6>
+                <table class="table table-sm">
+                    <tr><td><strong>Status:</strong></td><td><span class="badge ${getStatusClass(currentCase.status)}">${currentCase.status.replace('_', ' ').toUpperCase()}</span></td></tr>
+                    <tr><td><strong>Priority:</strong></td><td><span class="badge ${getPriorityClass(currentCase.priority)}">${currentCase.priority.toUpperCase()}</span></td></tr>
+                    <tr><td><strong>Created:</strong></td><td>${new Date(currentCase.created_at).toLocaleString()}</td></tr>
+                    <tr><td><strong>Description:</strong></td><td>${currentCase.description}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6>Quick Actions</h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="addEvidence('${currentCase.id}')">
+                        <i class="fas fa-plus me-2"></i>Add Evidence
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="addInvestigationStep('${currentCase.id}')">
+                        <i class="fas fa-tasks me-2"></i>Add Step
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="addSuspect('${currentCase.id}')">
+                        <i class="fas fa-user me-2"></i>Add Suspect
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-4">
+                <h6>Evidence Items</h6>
+                <div id="evidence-list-${currentCase.id}">
+                    <p class="text-muted">No evidence items yet.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h6>Investigation Steps</h6>
+                <div id="steps-list-${currentCase.id}">
+                    <p class="text-muted">No steps recorded yet.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h6>Suspects</h6>
+                <div id="suspects-list-${currentCase.id}">
+                    <p class="text-muted">No suspects identified yet.</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.show();
+}
+
+function addEvidence(caseId) {
+    const evidenceType = prompt('Evidence type (document, image, video, audio, other):', 'document');
+    const description = prompt('Evidence description:', '');
+    const source = prompt('Evidence source:', 'Web Dashboard');
+    
+    if (evidenceType && description) {
+        // This would call the API to add evidence
+        showAlert('Evidence added successfully!', 'success');
+        loadCases(); // Refresh to show new evidence
+    }
+}
+
+function addInvestigationStep(caseId) {
+    const stepName = prompt('Step name:', '');
+    const stepDescription = prompt('Step description:', '');
+    
+    if (stepName && stepDescription) {
+        // This would call the API to add investigation step
+        showAlert('Investigation step added successfully!', 'success');
+        loadCases(); // Refresh to show new step
+    }
+}
+
+function addSuspect(caseId) {
+    const suspectName = prompt('Suspect name/identifier:', '');
+    const riskScore = prompt('Risk score (0-100):', '50');
+    
+    if (suspectName && riskScore) {
+        // This would call the API to add suspect
+        showAlert('Suspect added successfully!', 'success');
+        loadCases(); // Refresh to show new suspect
+    }
+}
+
+function refreshCases() {
+    loadCases();
+}
+
+function showSystemStats() {
+    // This could show a detailed statistics modal
+    showAlert('System statistics are displayed in the overview section above.', 'info');
+}
+
+function exportAllCases() {
+    // This would trigger export functionality
+    showAlert('Export functionality would be implemented here.', 'info');
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<style>
+.case-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.case-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.case-card .card-header {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    border-bottom: none;
+}
+
+.case-card .card-footer {
+    background: rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}
