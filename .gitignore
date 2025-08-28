@@ -1,4 +1,4 @@
-# Python
+# python part of the project
 __pycache__/
 *.py[cod]
 *$py.class
@@ -21,21 +21,21 @@ wheels/
 *.egg
 MANIFEST
 
-# Virtual environments
+# virtual environments
 venv/
 env/
 ENV/
 env.bak/
 venv.bak/
 
-# IDE
+# IDE part of the project
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# oS
 .DS_Store
 .DS_Store?
 ._*
@@ -44,31 +44,23 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Jupyter Notebook
+# jupyter notebook part of the project
 .ipynb_checkpoints
 
-# Environment variables
+# environment variables part of the project
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Logs
+# logs part of the project
 *.log
 logs/
 
-# Temporary files
+# temporary files part of the project
 *.tmp
 *.temp
 temp/
 tmp/
 
-# Data files (uncomment if you don't want to track data)
-# data/raw/*.csv
-# data/raw/*.json
-# data/raw/*.txt
-
-# Output files (uncomment if you don't want to track outputs)
-# outputs/analysis/*.json
-# outputs/visualizations/*.png

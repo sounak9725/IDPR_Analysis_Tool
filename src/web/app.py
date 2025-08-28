@@ -292,28 +292,34 @@ class IPDRDashboard:
                 return jsonify({'error': 'Data not loaded'}), 400
             
             try:
-                # Get network nodes and edges
-                nodes = []
-                edges = []
-                
+                # Build full node list with degrees
+                all_nodes = []
                 for node in self.analyzer.network_graph.nodes():
                     degree = self.analyzer.network_graph.degree(node)
-                    nodes.append({
+                    all_nodes.append({
                         'id': node,
                         'label': node,
                         'degree': degree,
-                        'size': min(degree * 2, 20)  # Scale node size
+                        'size': min(degree * 2, 20)
                     })
-                
-                for edge in self.analyzer.network_graph.edges():
-                    edges.append({
-                        'source': edge[0],
-                        'target': edge[1]
-                    })
-                
+
+                # Limit nodes for performance and compute a set for filtering edges
+                node_limit = 100
+                limited_nodes = all_nodes[:node_limit]
+                node_ids = set(n['id'] for n in limited_nodes)
+
+                # Include only edges whose endpoints are both present in the limited node set
+                filtered_edges = []
+                for source, target in self.analyzer.network_graph.edges():
+                    if source in node_ids and target in node_ids:
+                        filtered_edges.append({'source': source, 'target': target})
+
+                # Optionally cap edges after filtering
+                edge_limit = 200
+
                 return jsonify({
-                    'nodes': nodes[:100],  # Limit for performance
-                    'edges': edges[:200]   # Limit for performance
+                    'nodes': limited_nodes,
+                    'edges': filtered_edges[:edge_limit]
                 })
             except Exception as e:
                 return jsonify({'error': str(e)}), 500
