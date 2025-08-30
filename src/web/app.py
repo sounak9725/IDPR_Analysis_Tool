@@ -824,6 +824,10 @@ tryFetchAutoPassword();
                 resp = self._cors_response(jsonify({'success': True}))
                 return resp
 
+            # Skip authentication for health check endpoints
+            if request.endpoint in ['api_v1.api_health', 'api_v1.api_v1_health']:
+                return None
+
             # Require API key only if keys are configured
             # Refresh keys from file each request (lightweight)
             self._api_keys_file = set(self._load_api_keys_from_file())
@@ -875,6 +879,16 @@ tryFetchAutoPassword();
                 'status': 'ok',
                 'data_loaded': self.data_loaded,
                 'dataset_path': self.current_dataset_path
+            }})
+
+        @api.route('/v1/health')
+        def api_v1_health():
+            """Health check endpoint for Railway deployment - no authentication required"""
+            return jsonify({'success': True, 'data': {
+                'status': 'ok',
+                'data_loaded': self.data_loaded,
+                'dataset_path': self.current_dataset_path,
+                'timestamp': datetime.now().isoformat()
             }})
 
         @api.route('/datasets')
