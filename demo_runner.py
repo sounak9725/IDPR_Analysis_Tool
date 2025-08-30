@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 IPDR Analysis Demo Runner
 Run this script to see the complete IPDR analysis in action
@@ -9,7 +8,6 @@ import sys
 import json
 from datetime import datetime
 
-# Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 def check_dependencies():
@@ -51,28 +49,22 @@ def run_analysis():
     print("\n🔍 Running IPDR analysis...")
     
     try:
-        # Import here to avoid issues if not all deps are installed
         from src.core.ipdr_analyzer import IPDRAnalyzer
         
-        # Initialize analyzer
         analyzer = IPDRAnalyzer()
         
-        # Load data
         print("   Loading data...")
         data_file = os.path.join('data', 'raw', 'hackathon_ipdr_main.csv')
         if not analyzer.parse_ipdr_file(data_file):
             print("❌ Could not load data file")
             return False
         
-        # Extract relationships
         print("   Extracting relationships...")
         analyzer.extract_relationships()
         
-        # Analyze patterns
         print("   Analyzing communication patterns...")
         patterns = analyzer.analyze_communication_patterns()
         
-        # Display key metrics
         print(f"\n📈 Analysis Results:")
         print(f"   • Total records analyzed: {patterns['total_communications']:,}")
         print(f"   • Unique A-parties: {patterns['unique_a_parties']}")
@@ -83,7 +75,6 @@ def run_analysis():
         if 'avg_duration' in patterns and patterns['avg_duration'] > 0:
             print(f"   • Average duration: {patterns['avg_duration']:.1f} seconds")
         
-        # Detect suspicious activities
         print("   Detecting suspicious activities...")
         suspicious = analyzer.detect_suspicious_activities()
         
@@ -93,7 +84,6 @@ def run_analysis():
             print(f"   {i}. {severity_emoji} {activity['type'].replace('_', ' ').title()}")
             print(f"      └─ {activity['description']}")
         
-        # Entity search example
         if analyzer.data is not None and len(analyzer.data) > 0:
             sample_entity = analyzer.data['a_party'].iloc[0]
             search_results = analyzer.search_entity(sample_entity)
@@ -104,7 +94,6 @@ def run_analysis():
             print(f"   • As initiator: {len(search_results['as_initiator'])}")
             print(f"   • As recipient: {len(search_results['as_recipient'])}")
         
-        # Generate outputs
         print("\n💾 Generating output files...")
         try:
             viz_file = os.path.join('outputs', 'visualizations', 'network_analysis.png')
@@ -131,7 +120,6 @@ def display_detailed_analysis(analyzer, patterns, suspicious):
     print("📊 DETAILED ANALYSIS RESULTS")
     print("="*60)
     
-    # Communication patterns
     if 'busiest_hours' in patterns and patterns['busiest_hours']:
         print(f"\n⏰ Time Patterns:")
         if 'peak_hours' in patterns['busiest_hours']:
@@ -141,7 +129,6 @@ def display_detailed_analysis(analyzer, patterns, suspicious):
             quiet_hours = patterns['busiest_hours']['quiet_hours']
             print(f"   • Quietest hours: {quiet_hours}")
     
-    # Top communicators
     if 'top_communicators' in patterns:
         top_comm = patterns['top_communicators']
         if 'top_initiators' in top_comm:
@@ -154,7 +141,6 @@ def display_detailed_analysis(analyzer, patterns, suspicious):
             for entity, count in list(top_comm['top_recipients'].items())[:5]:
                 print(f"   • {entity}: {count} calls received")
     
-    # Network analysis
     if analyzer.network_graph.number_of_nodes() > 0:
         try:
             import networkx as nx
@@ -180,7 +166,6 @@ def display_detailed_analysis(analyzer, patterns, suspicious):
         except ImportError:
             print("   (NetworkX not available for advanced network metrics)")
     
-    # Suspicious activity details
     print(f"\n🚨 Suspicious Activity Details:")
     for i, activity in enumerate(suspicious, 1):
         print(f"\n   {i}. {activity['type'].replace('_', ' ').title()}")
@@ -226,7 +211,6 @@ def interactive_search(analyzer):
             elif not query:
                 continue
             
-            # Search for the entity
             results = analyzer.search_entity(query)
             
             if results['total_communications'] == 0:
@@ -242,7 +226,7 @@ def interactive_search(analyzer):
             if results['time_range']:
                 print(f"   • Activity period: {results['time_range']['first']} to {results['time_range']['last']}")
             
-            # Show communication partners
+            # shoing the communication partners
             if len(results['communication_partners']) > 0:
                 print(f"\n   Top communication partners:")
                 partners = results['communication_partners'][:5]  # Show top 5
@@ -283,10 +267,8 @@ def main():
     else:
         return
     
-    # Display results
     display_detailed_analysis(analyzer, patterns, suspicious)
     
-    # Ask if user wants interactive search
     print("\n" + "="*60)
     try:
         response = input("\nWould you like to run interactive entity search? (y/n): ").strip().lower()
@@ -295,7 +277,6 @@ def main():
     except KeyboardInterrupt:
         print("\nExiting...")
     
-    # Final summary
     print("\n" + "="*60)
     print("✅ ANALYSIS COMPLETE!")
     print("="*60)

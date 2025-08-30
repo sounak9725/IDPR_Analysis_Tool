@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 IPDR Analysis Web Dashboard Launcher
 Start the interactive web dashboard for IPDR analysis
@@ -13,7 +12,6 @@ import argparse
 import signal
 import socket
 
-# Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 def check_port_available(port):
@@ -53,7 +51,6 @@ def launch_web_dashboard(port=5000, host='0.0.0.0', debug=False, auto_browser=Tr
         
         app, socketio = create_app()
         
-        # Open browser after a short delay if auto_browser is True
         if auto_browser:
             def open_browser():
                 time.sleep(2)
@@ -63,7 +60,6 @@ def launch_web_dashboard(port=5000, host='0.0.0.0', debug=False, auto_browser=Tr
                     print(f"⚠️  Could not open browser automatically: {e}")
                     print(f"🌐 Please open manually: http://localhost:{port}")
             
-            # Start browser thread
             browser_thread = threading.Thread(target=open_browser)
             browser_thread.daemon = True
             browser_thread.start()
@@ -75,7 +71,6 @@ def launch_web_dashboard(port=5000, host='0.0.0.0', debug=False, auto_browser=Tr
         print("⏹️  Press Ctrl+C to stop the server")
         print("-" * 50)
         
-        # Run the Flask app
         socketio.run(app, debug=debug, host=host, port=port)
         
     except Exception as e:
@@ -98,18 +93,15 @@ def main():
     
     args = parser.parse_args()
     
-    # Set up signal handlers for graceful shutdown
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
     print("🌐 IPDR Analysis Web Dashboard")
     print("=" * 40)
     
-    # Check dependencies
     if not check_web_dependencies():
         return
     
-    # Determine port
     port = args.port
     if args.auto_port:
         available_port = find_available_port(port)
@@ -120,14 +112,13 @@ def main():
             print(f"❌ No available ports found starting from {port}")
             return
     
-    # Check if port is available
     if not check_port_available(port):
         print(f"❌ Port {port} is already in use")
         if not args.auto_port:
             print("💡 Use --auto-port to find an available port automatically")
         return
     
-    # Launch dashboard
+    # launching the dashboard
     launch_web_dashboard(
         port=port,
         host=args.host,

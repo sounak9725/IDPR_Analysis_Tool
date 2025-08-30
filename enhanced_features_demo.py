@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Enhanced Features Demo Script
 Demonstrates the new high-priority enhancements:
@@ -12,7 +11,6 @@ import sys
 import pandas as pd
 from datetime import datetime, timedelta
 
-# Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from src.utils.enhanced_bparty_analyzer import EnhancedBPartyAnalyzer
@@ -35,7 +33,6 @@ def demo_enhanced_bparty_analysis():
     """Demonstrate Enhanced B-Party Analysis"""
     print_section("Enhanced B-Party Analysis")
     
-    # Initialize the analyzer
     bparty_analyzer = EnhancedBPartyAnalyzer()
     
     # Test data - mix of IP addresses and mobile numbers
@@ -54,14 +51,13 @@ def demo_enhanced_bparty_analysis():
     
     print("🔍 Analyzing B-party data...")
     
-    # Analyze each B-party
+    # analyzing each B-party yep
     analysis_results = []
     for bparty in test_bparties:
         result = bparty_analyzer.analyze_bparty(bparty)
         analysis_results.append(result)
         print(f"  📱 {bparty}: {result['type']} (Risk: {result['risk_score']})")
     
-    # Generate comprehensive report
     print("\n📊 Generating B-party analysis report...")
     report = bparty_analyzer.generate_bparty_report(analysis_results)
     
@@ -73,7 +69,7 @@ def demo_enhanced_bparty_analysis():
     print(f"  🔴 Medium Risk: {report['risk_distribution']['medium_risk']}")
     print(f"  🟢 Low Risk: {report['risk_distribution']['low_risk']}")
     
-    # Show top risky B-parties
+    # show top risky B-parties yep
     if report['top_risky_bparties']:
         print("\n🚨 Top Risky B-Parties:")
         for i, risky in enumerate(report['top_risky_bparties'][:5], 1):
@@ -85,19 +81,19 @@ def demo_advanced_filtering():
     """Demonstrate Advanced Filtering System"""
     print_section("Advanced Filtering System")
     
-    # Initialize the filtering system
+    # initializing the filtering system feature
     filtering_system = AdvancedFilteringSystem()
     
-    # Load sample IPDR data
+    # loading sample IPDR data
     print("📊 Loading sample IPDR data...")
     try:
-        # Try to load existing data
+        # trying to load existing data
         data_file = os.path.join('data', 'raw', 'hackathon_ipdr_main.csv')
         if os.path.exists(data_file):
             df = pd.read_csv(data_file)
             print(f"  ✅ Loaded {len(df)} records from existing data")
         else:
-            # Generate sample data if none exists
+            # generating sample data if none exists
             print("  🔄 No existing data found, generating sample data...")
             from src.utils.synthetic_ipdr_generator import create_comprehensive_dataset
             df = create_comprehensive_dataset(1000)  # Generate 1000 records
@@ -106,22 +102,22 @@ def demo_advanced_filtering():
         print(f"  ❌ Error loading data: {e}")
         return None
     
-    # Apply predefined templates
+    # applying predefined templates
     print("\n🔧 Applying filter templates...")
     
-    # Apply law enforcement critical filter
+    # applying law enforcement critical filter
     filtering_system.apply_template('law_enforcement_critical')
     print("  ✅ Applied Law Enforcement Critical filter")
     
-    # Apply suspicious activity filter
+    # applying suspicious activity filter
     filtering_system.apply_template('suspicious_activity')
     print("  ✅ Applied Suspicious Activity filter")
     
-    # Apply network analysis filter
+    # applying network analysis filter
     filtering_system.apply_template('network_analysis')
     print("  ✅ Applied Network Analysis filter")
     
-    # Create custom filter
+    # creating custom filter
     print("\n⚙️  Creating custom filter...")
     custom_filter = FilterCriteria(
         name="Custom Duration Filter",
@@ -137,10 +133,10 @@ def demo_advanced_filtering():
     filtering_system.add_filter(custom_filter)
     print("  ✅ Added custom duration filter")
     
-    # Apply filters
+    # applying filters
     print("\n🚀 Applying all filters...")
     
-    # Create context for relevance scoring
+    # creating context for relevance scoring
     context = {
         'entity_frequency': 10,  # Example frequency
         'geographic_context': {
@@ -151,7 +147,7 @@ def demo_advanced_filtering():
         'risk_score': 65
     }
     
-    # Apply filters
+    # applying filters
     filtered_data, filtered_out = filtering_system.apply_filters(df, context)
     
     print(f"  📊 Original records: {len(df)}")
@@ -159,13 +155,12 @@ def demo_advanced_filtering():
     print(f"  ❌ Filtered out: {len(filtered_out)}")
     print(f"  📈 Filter effectiveness: {round((len(filtered_data) / len(df)) * 100, 2)}%")
     
-    # Show relevance scores
+            # showing relevance scores
     if 'relevance_score' in filtered_data.columns:
         print(f"  🎯 Average relevance score: {filtered_data['relevance_score'].mean():.3f}")
         print(f"  🎯 Min relevance score: {filtered_data['relevance_score'].min():.3f}")
         print(f"  🎯 Max relevance score: {filtered_data['relevance_score'].max():.3f}")
     
-    # Generate filter report
     print("\n📋 Generating filter report...")
     filter_report = filtering_system.generate_filter_report(df, filtered_data, filtered_out)
     
@@ -179,10 +174,8 @@ def demo_case_management():
     """Demonstrate Case Management System"""
     print_section("Case Management System")
     
-    # Initialize the case management system
     case_system = CaseManagementSystem()
     
-    # Create a new case
     print("📋 Creating new investigation case...")
     case_id = case_system.create_case(
         case_number="IPDR-2024-001",
@@ -195,7 +188,6 @@ def demo_case_management():
     )
     print(f"  ✅ Created case: {case_id}")
     
-    # Add investigation steps
     print("\n📝 Adding investigation steps...")
     
     step1_id = case_system.add_investigation_step(
@@ -225,7 +217,6 @@ def demo_case_management():
     )
     print(f"  ✅ Added step 3: Network Mapping")
     
-    # Add evidence
     print("\n🔍 Adding evidence...")
     
     evidence1_id = case_system.add_evidence(
@@ -252,7 +243,6 @@ def demo_case_management():
     )
     print(f"  ✅ Added evidence: Network Visualization")
     
-    # Add suspects
     print("\n👤 Adding suspects...")
     
     suspect1_id = case_system.add_suspect(
@@ -273,7 +263,7 @@ def demo_case_management():
     )
     print(f"  ✅ Added suspect: 192.168.1.100 (Risk: 72.0)")
     
-    # Update investigation step status
+    # updating investigation step status
     print("\n🔄 Updating investigation progress...")
     
     case_system.update_investigation_step(
@@ -294,7 +284,7 @@ def demo_case_management():
     )
     print(f"  ✅ Updated step 2: In Progress")
     
-    # Update case status
+    # updating case status
     case_system.update_case_status(
         case_id=case_id,
         new_status=CaseStatus.IN_PROGRESS,
@@ -303,7 +293,7 @@ def demo_case_management():
     )
     print(f"  ✅ Updated case status: In Progress")
     
-    # Get case summary
+    # getting case summary
     print("\n📊 Getting case summary...")
     case_summary = case_system.get_case_summary(case_id)
     
@@ -315,14 +305,14 @@ def demo_case_management():
     print(f"  👤 Total suspects: {case_summary['statistics']['total_suspects']}")
     print(f"  🚨 High risk suspects: {case_summary['statistics']['high_risk_suspects']}")
     
-    # Generate case report
+    # generating case report
     print("\n📄 Generating case report...")
     case_report = case_system.generate_case_report(case_id, "comprehensive")
     
     print(f"  📄 Report generated: {case_report['report_metadata']['report_type']}")
     print(f"  ⏰ Generated at: {case_report['report_metadata']['generated_at']}")
     
-    # Export case data
+    # exporting case data
     print("\n💾 Exporting case data...")
     success, result = case_system.export_case_data(case_id, "json")
     if success:
@@ -330,7 +320,7 @@ def demo_case_management():
     else:
         print(f"  ❌ Export failed: {result}")
     
-    # Get system statistics
+    # getting system statistics
     print("\n📈 Getting system statistics...")
     system_stats = case_system.get_system_statistics()
     
@@ -349,24 +339,24 @@ def demo_integration():
     
     print("🔄 Integrating enhanced features with existing IPDR analyzer...")
     
-    # Initialize IPDR analyzer
+    # initializing IPDR analyzer
     analyzer = IPDRAnalyzer()
     
-    # Load sample data
+    # loading sample data
     data_file = os.path.join('data', 'raw', 'hackathon_ipdr_main.csv')
     if os.path.exists(data_file):
         print("  📊 Loading existing IPDR data...")
         analyzer.parse_ipdr_file(data_file)
         print(f"  ✅ Loaded {len(analyzer.data)} records")
         
-        # Extract relationships
+        # extracting relationships
         analyzer.extract_relationships()
         print("  🔗 Extracted communication relationships")
         
-        # Get unique B-parties for analysis
+        # getting unique B-parties for analysis
         unique_bparties = analyzer.data['b_party'].unique()[:20]  # First 20 for demo
         
-        # Enhanced B-party analysis
+        # performing enhanced B-party analysis
         print("\n🔍 Performing enhanced B-party analysis...")
         bparty_analyzer = EnhancedBPartyAnalyzer()
         
@@ -375,7 +365,7 @@ def demo_integration():
             result = bparty_analyzer.analyze_bparty(str(bparty))
             bparty_results.append(result)
         
-        # Create case for high-risk findings
+        # creating case for high-risk findings
         print("\n📋 Creating case for high-risk findings...")
         case_system = CaseManagementSystem()
         
@@ -388,7 +378,7 @@ def demo_integration():
             tags=["high_risk", "bparty_analysis", "automated"]
         )
         
-        # Add high-risk B-parties as suspects
+                # high-risk B-parties as suspects
         high_risk_count = 0
         for result in bparty_results:
             if result.get('risk_score', 0) >= 70:
@@ -402,7 +392,7 @@ def demo_integration():
         
         print(f"  ✅ Created case with {high_risk_count} high-risk suspects")
         
-        # Apply advanced filtering
+        #  advanced filtering
         print("\n🔧 Applying advanced filtering to IPDR data...")
         filtering_system = AdvancedFilteringSystem()
         filtering_system.apply_template('law_enforcement_critical')
