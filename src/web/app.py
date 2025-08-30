@@ -516,13 +516,16 @@ class IPDRDashboard:
           <button class='btn btn-success' onclick='createKey()'>Create</button>
         </div>
       </div>
-      <div class='col-md-4'>
+      <div class='col-md-3'>
         <input id='adminPw' type='password' class='form-control' placeholder='Admin password'>
       </div>
-      <div class='col-md-3'>
+      <div class='col-md-2'>
+        <input id='apiKey' type='password' class='form-control' placeholder='API Key'>
+      </div>
+      <div class='col-md-2'>
         <div class='d-grid'>
           <div class='btn-group'>
-            <button class='btn btn-primary' onclick='savePw()'>Save Password</button>
+            <button class='btn btn-primary' onclick='savePw()'>Save</button>
             <button class='btn btn-outline-light' onclick='clearPw()'>Clear</button>
           </div>
         </div>
@@ -539,7 +542,13 @@ class IPDRDashboard:
 <script>
 async function tryFetchAutoPassword(){
   try{
-    const r = await fetch('/api/v1/admin/password');
+    // Try to get the API key from localStorage or use a default one
+    const apiKey = localStorage.getItem('api_key') || 'UIDN*&*@(KKD';
+    const r = await fetch('/api/v1/admin/password', {
+      headers: {
+        'X-API-Key': apiKey
+      }
+    });
     if(r.ok){
       const j = await r.json();
       if(j && j.success && j.data && j.data.password){
@@ -551,19 +560,26 @@ async function tryFetchAutoPassword(){
 }
 function getHeaders(){
   const pw = localStorage.getItem('admin_pw') || document.getElementById('adminPw').value;
-  const h = {};
+  const apiKey = localStorage.getItem('api_key') || 'UIDN*&*@(KKD';
+  const h = {
+    'X-API-Key': apiKey
+  };
   if(pw) h['X-Admin-Password'] = pw;
   return h;
 }
 function savePw(){
-  const v=document.getElementById('adminPw').value;
-  if(v) localStorage.setItem('admin_pw', v);
+  const pw = document.getElementById('adminPw').value;
+  const apiKey = document.getElementById('apiKey').value;
+  if(pw) localStorage.setItem('admin_pw', pw);
+  if(apiKey) localStorage.setItem('api_key', apiKey);
   loadKeys();
 }
 function clearPw(){
   localStorage.removeItem('admin_pw');
+  localStorage.removeItem('api_key');
   document.getElementById('adminPw').value='';
-  setStatus('Password cleared from this browser', 'info');
+  document.getElementById('apiKey').value='';
+  setStatus('Credentials cleared from this browser', 'info');
 }
 function setStatus(message, type){
   const el=document.getElementById('status');
@@ -598,6 +614,10 @@ async function createKey(){
   if(!v) return; await fetch('/api/v1/admin/keys',{method:'POST',headers:Object.assign({'Content-Type':'application/json'}, getHeaders()),body:JSON.stringify({key:v})});
   document.getElementById('newKey').value=''; loadKeys();
 }
+// Initialize stored values
+document.getElementById('apiKey').value = localStorage.getItem('api_key') || 'UIDN*&*@(KKD';
+document.getElementById('adminPw').value = localStorage.getItem('admin_pw') || '';
+
 loadKeys();
 tryFetchAutoPassword();
 </script>

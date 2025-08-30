@@ -1,8 +1,12 @@
-# IPDR Analysis Tool 🚀
+# IPDR Analysis System
 
-A comprehensive toolkit for analyzing Internet Protocol Detail Records (IPDR) with advanced pattern detection, network visualization, and an interactive web dashboard for real-time investigation and analysis.
+A comprehensive digital forensics and telecommunications analysis platform designed to process, analyze, and visualize communication data between parties. The system provides both programmatic API access and an interactive web interface for investigators, law enforcement, and security analysts.
 
-## ✨ Features
+## System Overview
+
+The IPDR (Internet Protocol Detail Record) Analysis System processes telecommunications metadata to identify patterns, relationships, and anomalies in communication networks. It analyzes communication records between Party A (initiator) and Party B (recipient) to provide insights for criminal investigations, fraud detection, network security, and compliance monitoring.
+
+## Core Features
 
 - **Multi-format IPDR parsing** (CSV, JSON, TXT)
 - **Network analysis** with relationship mapping and force-directed graphs
@@ -16,7 +20,7 @@ A comprehensive toolkit for analyzing Internet Protocol Detail Records (IPDR) wi
 - **Network Visualization** with interactive D3.js force-directed graphs
 - **Real-time Communication** using Flask-SocketIO
 
-## 🌐 Web Dashboard Features
+## Web Dashboard Features
 
 ### Dashboard Overview
 - **Real-time Statistics**: Live overview of IPDR data with key metrics
@@ -46,7 +50,7 @@ A comprehensive toolkit for analyzing Internet Protocol Detail Records (IPDR) wi
 - **Behavioral Analysis**: Entity behavior patterns and anomalies
 - **Anomaly Detection**: Automated identification of unusual activities
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ipdr_hackathon/
@@ -84,7 +88,7 @@ ipdr_hackathon/
 └── README.md                    # This file
 ```
 
-## 🚀 Installation
+## Installation
 
 1. **Clone or download the project**
 2. **Create a virtual environment:**
@@ -101,9 +105,9 @@ ipdr_hackathon/
    pip install flask flask-socketio
    ```
 
-## 🎯 Quick Start
+## Quick Start
 
-### Option 1: Web Dashboard (Recommended) 🌟
+### Option 1: Web Dashboard (Recommended)
 Launch the interactive web dashboard:
 ```bash
 python web_dashboard.py
@@ -132,7 +136,7 @@ This will:
 - Generate visualizations
 - Provide interactive search capabilities
 
-## 🔍 How to Use the Web Dashboard
+## How to Use the Web Dashboard
 
 ### 1. Dashboard Overview
 - **Launch**: Run `python web_dashboard.py`
@@ -155,7 +159,7 @@ This will:
 - **Anomalies**: Automated detection of unusual communication patterns
 - **Behavioral Insights**: Analysis of entity communication behavior
 
-## 📊 Analysis Capabilities
+## Analysis Capabilities
 
 ### Core Analysis
 - **Communication Pattern Analysis**: Identify peak hours, busy entities, and communication trends
@@ -183,7 +187,7 @@ This will:
 - **Anomaly Detection**: Automated identification of suspicious patterns
 - **Export Functionality**: Download investigation results in multiple formats
 
-## 💻 Usage Examples
+## Usage Examples
 
 ### Basic Analysis
 ```python
@@ -216,7 +220,7 @@ analyzer.generate_network_visualization('outputs/visualizations/network.png')
 # GET /api/patterns - Get communication patterns
 ```
 
-## 🌟 Key Features for Presentation
+## Key Features for Presentation
 
 ### 1. Interactive Web Interface
 - **Modern UI**: Bootstrap-based responsive design
@@ -242,7 +246,7 @@ analyzer.generate_network_visualization('outputs/visualizations/network.png')
 - **Real-time Updates**: Live data visualization
 - **Customizable Views**: Adjustable display parameters
 
-## 📈 Output Files
+## Output Files
 
 The tool generates several output files:
 - `outputs/analysis/complete_analysis.json` - Detailed analysis results
@@ -250,14 +254,14 @@ The tool generates several output files:
 - Various data files in the `data/` directory
 - Web dashboard accessible at http://localhost:5000
 
-## 🧪 Testing
+## Testing
 
 Run tests (when implemented):
 ```bash
 python -m pytest tests/
 ```
 
-## 📝 Data Formats
+## Data Formats
 
 The tool supports multiple IPDR formats:
 
@@ -285,7 +289,7 @@ timestamp,a_party,b_party,duration,service_type
 2024-01-15 10:30:15|919876543210|918765432109|120|VOICE
 ```
 
-## 🎯 How to Present the Project
+## How to Present the Project
 
 ### 1. Start with the Web Dashboard
 ```bash
@@ -313,7 +317,7 @@ python web_dashboard.py
 - **Network Mapping**: Relationship analysis and clustering
 - **Export Capabilities**: Download results for further analysis
 
-## 🔧 Technical Stack
+## Technical Stack
 
 - **Backend**: Python, Flask, Flask-SocketIO
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
@@ -323,13 +327,23 @@ python web_dashboard.py
 - **Real-time**: WebSocket communication
 - **Data Generation**: Faker library for synthetic data
 
-## 🚀 Performance Features
+## Performance Features
 
 - **Real-time Processing**: Live data analysis and visualization
 - **Interactive Visualizations**: Responsive charts and graphs
 - **Efficient Search**: Optimized entity search algorithms
 - **Memory Management**: Efficient data handling for large datasets
 - **Responsive UI**: Fast loading and smooth interactions
+
+## Documentation
+
+For comprehensive documentation, see:
+- **[System Overview](docs/SYSTEM_OVERVIEW.md)**: High-level system description and capabilities
+- **[Technical Architecture](docs/TECHNICAL_ARCHITECTURE.md)**: System architecture and implementation details
+- **[Web Interface](docs/WEB_INTERFACE.md)**: Web interface features and functionality
+- **[User Guide](docs/USER_GUIDE.md)**: Comprehensive user instructions and best practices
+- **[API Documentation](docs/API_DOCUMENTATION.md)**: Complete API endpoint documentation
+- **[Comprehensive Documentation](COMPREHENSIVE_README.md)**: Complete system overview and documentation
 
 ## Contributing
 
@@ -348,17 +362,3 @@ This project is developed for hackathon purposes.
 For issues or questions, please check the documentation in the `docs/` folder or create an issue in the repository.
 
 ---
-
-**🚀 Ready for hackathon presentation! 🎉**
-
-**Key Highlights for Demo:**
-- **Interactive Web Dashboard**: Modern, professional interface
-- **Real-time Analysis**: Live data processing and visualization
-- **Advanced Search**: Enhanced investigation tools
-- **Network Visualization**: Interactive D3.js graphs
-- **Pattern Detection**: Automated anomaly identification
-- **Professional UI**: Bootstrap-based responsive design
-- **Export Capabilities**: Download results for further analysis
-- **Multi-format Support**: CSV, JSON, TXT parsing
-- **Real-time Updates**: WebSocket communication
-- **Mobile Responsive**: Works on all devices

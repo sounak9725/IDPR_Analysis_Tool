@@ -1,8 +1,8 @@
-# 🚀 IPDR Analysis Tool - Startup Guide
+# IPDR Analysis Tool - Startup Guide
 
 This guide covers different ways to start and deploy the IPDR Analysis Tool.
 
-## 🏃‍♂️ Quick Start (Development)
+##  Quick Start (Development)
 
 ### 1. Basic Web Dashboard
 ```bash
@@ -29,7 +29,7 @@ python web_dashboard.py --auto-port
 python web_dashboard.py --debug
 ```
 
-## 🏭 Production Deployment
+## Production Deployment
 
 ### 1. Production Server
 ```bash
@@ -61,7 +61,7 @@ set HOST=0.0.0.0
 set PORT=5000
 ```
 
-## 🔧 Configuration Options
+##  Configuration Options
 
 ### 1. Configuration File
 The tool uses `config.py` for centralized configuration:
@@ -88,7 +88,7 @@ OUTPUT_DIR=outputs
 LOG_LEVEL=INFO
 ```
 
-## 📊 Health Monitoring
+## Health Monitoring
 
 ### 1. Health Check Endpoint
 ```bash
@@ -104,7 +104,7 @@ curl http://localhost:5000/status
 - **Production**: `logs/production.log`
 - **Application**: `ipdr_analysis.log`
 
-## 🐳 Docker Commands
+## Docker Commands
 
 ### 1. Build and Run
 ```bash
@@ -136,7 +136,7 @@ docker-compose down
 docker-compose up -d --build
 ```
 
-## 🔒 Security Considerations
+## Security Considerations
 
 ### 1. Production Security
 - Change default `SECRET_KEY`
@@ -151,7 +151,7 @@ docker-compose up -d --build
 - Consider reverse proxy (nginx)
 - Enable CORS appropriately
 
-## 📈 Performance Optimization
+##  Performance Optimization
 
 ### 1. Server Settings
 - Use production WSGI server (gunicorn)
@@ -165,7 +165,7 @@ docker-compose up -d --build
 - Use database indexing
 - Cache frequently accessed data
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### 1. Common Issues
 ```bash
@@ -192,7 +192,7 @@ python web_dashboard.py --debug
 tail -f web_dashboard.log
 ```
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **README.md**: Complete project documentation
 - **config.py**: Configuration options
@@ -200,7 +200,7 @@ tail -f web_dashboard.log
 - **Dockerfile**: Container configuration
 - **docker-compose.yml**: Multi-service setup
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. **Customize Configuration**: Modify `config.py` for your environment
 2. **Add Authentication**: Implement user login system
