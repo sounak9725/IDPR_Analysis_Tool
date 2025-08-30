@@ -12,7 +12,7 @@ import time
 from werkzeug.utils import secure_filename
 from flask import Blueprint, Response
 
-# Configure logging
+# logging part coding
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -23,7 +23,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Add src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 from src.core.ipdr_analyzer import IPDRAnalyzer
@@ -37,7 +36,7 @@ class IPDRDashboard:
         self.app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'ipdr-hackathon-2024')
         self.app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
         
-        # Configure SocketIO with better production settings
+        # configuring the SocketIO with better production settings for the dashboard
         self.socketio = SocketIO(
             self.app, 
             cors_allowed_origins="*",
@@ -57,14 +56,14 @@ class IPDRDashboard:
         self.setup_error_handlers()
         self.api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
         self.setup_api_v1()
-        # Simple job store
+        # implementing the job store
         self.jobs = {}
-        # Resolve base directories deterministically (project root = two levels up from this file)
+        # resolving the base directories deterministically (project root = two levels up from this file)
         self.base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
         self.config_dir = os.path.join(self.base_dir, 'config')
         self.exports_dir = os.path.join(self.base_dir, 'outputs', 'exports')
         os.makedirs(self.config_dir, exist_ok=True)
-        # Load or generate admin password (file or env).
+        # loading or generating the admin password (file or env).
         self.admin_password, self.admin_password_auto = self._load_or_generate_admin_password()
         try:
             self.jobs = self._load_jobs_from_file()
@@ -78,10 +77,10 @@ class IPDRDashboard:
             return []
         
         try:
-            # Replace NaN values with None (which becomes null in JSON)
+            # replacing the NaN values with none in the json file
             df_clean = df.replace({np.nan: None})
             
-            # Convert to records and clean each record
+            # converting to records and cleaning each record
             records = df_clean.to_dict('records')
             cleaned_records = []
             
@@ -103,7 +102,7 @@ class IPDRDashboard:
             return cleaned_records
         except Exception as e:
             logger.error(f"Error cleaning data for JSON: {str(e)}")
-            # Fallback: return empty list if cleaning fails
+            # fallback: returning an empty list if cleaning fails
             return []
         
     def setup_error_handlers(self):
@@ -237,7 +236,7 @@ class IPDRDashboard:
                 num_records = int(payload.get('num_records', 10000))
                 days_span = int(payload.get('days_span', 30))
 
-                # Lazy import to avoid cost if unused
+                # lazy import to avoid cost if unused
                 from src.utils.synthetic_ipdr_generator import SyntheticIPDRGenerator
 
                 generator = SyntheticIPDRGenerator()
@@ -248,7 +247,7 @@ class IPDRDashboard:
                 filename = f"generated_{int(time.time())}.csv"
                 save_path = os.path.join(raw_dir, filename)
 
-                # Save CSV
+                # saving the CSV file
                 import pandas as pd
                 pd.DataFrame(records).to_csv(save_path, index=False)
 
@@ -296,7 +295,7 @@ class IPDRDashboard:
                 if not dataset_path or not os.path.exists(dataset_path):
                     return jsonify({'error': 'Dataset path not found'}), 400
 
-                # Initialize analyzers if needed
+                # initializing the analyzers if needed
                 if self.analyzer is None:
                     self.analyzer = IPDRAnalyzer()
                     self.enhanced_analyzer = EnhancedBPartyAnalyzer()
@@ -355,7 +354,7 @@ class IPDRDashboard:
             try:
                 results = self.analyzer.search_entity(query)
                 
-                # Enhanced search results
+                # enhanced search results
                 enhanced_results = {
                     'entity': query,
                     'total_communications': results['total_communications'],
@@ -368,14 +367,14 @@ class IPDRDashboard:
                     'suspicious_flags': []
                 }
                 
-                # Get top communication partners with counts
+                # getting the top communication partners with counts
                 if self.analyzer.data is not None:
                     entity_data = self.analyzer.data[
                         (self.analyzer.data['a_party'] == query) | 
                         (self.analyzer.data['b_party'] == query)
                     ]
                     
-                    # Top partners
+                    # top partners
                     if entity_data['a_party'].iloc[0] == query:
                         partners = entity_data['b_party'].value_counts().head(5)
                     else:
@@ -386,7 +385,7 @@ class IPDRDashboard:
                         for partner, count in partners.items()
                     ]
                     
-                    # Recent activity
+                    # recent activity
                     recent = entity_data.sort_values('timestamp', ascending=False).head(5)
                     enhanced_results['recent_activity'] = [
                         {
@@ -421,7 +420,7 @@ class IPDRDashboard:
                 return jsonify({'error': 'Data not loaded'}), 400
             
             try:
-                # Build full node list with degrees
+                # building the full node list with degrees
                 all_nodes = []
                 for node in self.analyzer.network_graph.nodes():
                     degree = self.analyzer.network_graph.degree(node)
@@ -432,18 +431,15 @@ class IPDRDashboard:
                         'size': min(degree * 2, 20)
                     })
 
-                # Limit nodes for performance and compute a set for filtering edges
                 node_limit = 100
                 limited_nodes = all_nodes[:node_limit]
                 node_ids = set(n['id'] for n in limited_nodes)
 
-                # Include only edges whose endpoints are both present in the limited node set
                 filtered_edges = []
                 for source, target in self.analyzer.network_graph.edges():
                     if source in node_ids and target in node_ids:
                         filtered_edges.append({'source': source, 'target': target})
 
-                # Optionally cap edges after filtering
                 edge_limit = 200
 
                 return jsonify({
@@ -462,7 +458,7 @@ class IPDRDashboard:
             try:
                 patterns = self.analyzer.analyze_communication_patterns()
                 
-                # Format patterns for frontend
+                # formatting the patterns for the frontend
                 formatted_patterns = {
                     'time_patterns': {
                         'peak_hours': patterns.get('busiest_hours', {}).get('peak_hours', []),
@@ -493,7 +489,7 @@ class IPDRDashboard:
             """Patterns analysis page"""
             return render_template('patterns.html')
 
-        # Simple admin UI for API keys (local only, no auth gate here beyond UI presence)
+        # simple admin UI for API keys local only, no auth gate here beyond UI presence maybe later I can enchance the stuffs
         @self.app.route('/admin/keys')
         def admin_keys_page():
             try:
@@ -634,13 +630,13 @@ tryFetchAutoPassword();
                 return jsonify({'error': 'Data not loaded'}), 400
             
             try:
-                # Get sample B-parties from the data
+                # getting sample B-parties from the data
                 bparties = self.analyzer.data['b_party'].unique()[:20]  # First 20 unique B-parties
                 
-                # Analyze B-parties
+                # analyzing B-parties
                 analysis_results = self.enhanced_analyzer.batch_analyze_bparties(bparties.tolist())
                 
-                # Generate report
+                # generating the report
                 report = self.enhanced_analyzer.generate_bparty_report(analysis_results)
                 
                 return jsonify({
@@ -658,7 +654,7 @@ tryFetchAutoPassword();
                 return jsonify({'error': 'Data not loaded'}), 400
             
             try:
-                # apply default filter templates
+                # applying default filter templates
                 self.filtering_system.apply_template('law_enforcement_critical')
                 self.filtering_system.apply_template('suspicious_activity')
                 
@@ -677,16 +673,16 @@ tryFetchAutoPassword();
                     logger.error(f"filtered_out is not a DataFrame: {type(filtered_out)}")
                     filtered_out = pd.DataFrame()
                 
-                # Clean data for JSON serialization
+                # cleaning data for JSON serialization
                 logger.info("Cleaning data for JSON serialization...")
                 cleaned_filtered_data = self.clean_data_for_json(filtered_data)
                 
-                # Limit to 100 records
+                # limiting to 100 records
                 cleaned_filtered_data = cleaned_filtered_data[:100]
                 
                 logger.info(f"Cleaned data: {len(cleaned_filtered_data)} records ready for JSON")
                 
-                # Get filter statistics
+                # getting the filter statistics
                 stats = {
                     'original_count': len(self.analyzer.data),
                     'filtered_count': len(filtered_data),
@@ -719,10 +715,10 @@ tryFetchAutoPassword();
                 return jsonify({'error': 'Data not loaded'}), 400
             
             try:
-                # Get existing cases
+                # getting the existing cases
                 cases = self.case_management.get_all_cases()
                 
-                # Get system statistics
+                # getting the system statistics
                 stats = self.case_management.get_system_statistics()
                 
                 return jsonify({
@@ -788,7 +784,7 @@ tryFetchAutoPassword();
                 
                 evidence_type_enum = evidence_type_map.get(evidence_type_str.lower(), 'OTHER')
                 
-                # Import EvidenceType enum
+                # importing the EvidenceType enum
                 from src.utils.case_management import EvidenceType
                 evidence_type = getattr(EvidenceType, evidence_type_enum)
                 
@@ -816,10 +812,10 @@ tryFetchAutoPassword();
         self._api_keys = set.union(self._api_keys_env, self._api_keys_file)
         self._rate_limit_state = {}
 
-        # CORS and API key auth
+        # CORS and API key auth for the API
         @api.before_request
         def api_auth_and_cors():
-            # CORS preflight
+            # CORS preflight for the API    
             if request.method == 'OPTIONS':
                 resp = self._cors_response(jsonify({'success': True}))
                 return resp
@@ -828,15 +824,15 @@ tryFetchAutoPassword();
             if request.endpoint in ['api_v1.api_health', 'api_v1.api_v1_health']:
                 return None
 
-            # Require API key only if keys are configured
-            # Refresh keys from file each request (lightweight)
+            #  API key only if keys are configured
+            # refreshing keys from file each request (lightweight)
             self._api_keys_file = set(self._load_api_keys_from_file())
             self._api_keys = set.union(self._api_keys_env, self._api_keys_file)
 
             if self._api_keys:
                 key = request.headers.get('X-API-Key') or None
                 if not key:
-                    # Support Bearer token
+                    # supporting the Bearer token
                     auth = request.headers.get('Authorization', '')
                     if auth.lower().startswith('bearer '):
                         key = auth.split(' ', 1)[1].strip()
@@ -846,7 +842,7 @@ tryFetchAutoPassword();
                     resp.status_code = 401
                     return self._cors_response(resp)
 
-                # Simple in-memory rate limiting: 60 req/min per key
+                # simple in-memory rate limiting: 60 req/min per key
                 from time import time as now
                 bucket = self._rate_limit_state.get(key)
                 window = 60
@@ -869,7 +865,7 @@ tryFetchAutoPassword();
             return self._cors_response(response)
 
         
-        # helper: add CORS headers
+        # helper: add CORS headers for the API
         
         
 
