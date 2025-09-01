@@ -489,6 +489,58 @@ class IPDRDashboard:
             """Patterns analysis page"""
             return render_template('patterns.html')
 
+        @self.app.route('/contributors')
+        def contributors_page():
+            """Simple page listing developer contributors"""
+            contributors = [
+                {
+                    'name': 'Divya Bhaskar',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Male',
+                    'email': 'divya.24bcy10061@vitbhopal.ac.in',
+                    'mobile': '8628896159'
+                },
+                {
+                    'name': 'Sounak Bera',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Male',
+                    'email': 'sounak.24bcy10012@vitbhopal.ac.in',
+                    'mobile': '8240308506'
+                },
+                {
+                    'name': 'Ashqua Islam',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Female',
+                    'email': 'ashqua.24bcy10345@vitbhopal.ac.in',
+                    'mobile': '6360007954'
+                },
+                {
+                    'name': 'Sakshya Patel',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Male',
+                    'email': 'sakshya.24bcy10027@vitbhopal.ac.in',
+                    'mobile': '9696053006'
+                },
+                {
+                    'name': 'Aditya Nayak',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Male',
+                    'email': 'aditya.24bcy10283@vitbhopal.ac.in',
+                    'mobile': '9301359332'
+                },
+            ]
+            return render_template('contributors.html', contributors=contributors)
+
         # simple admin UI for API keys local only, no auth gate here beyond UI presence maybe later I can enchance the stuffs
         @self.app.route('/admin/keys')
         def admin_keys_page():
@@ -1246,6 +1298,57 @@ tryFetchAutoPassword();
                 "</body></html>"
             )
             return Response(html, mimetype='text/html')
+
+        @api.route('/contributors')
+        def api_contributors():
+            contributors = [
+                {
+                    'name': 'Divya Bhaskar',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Male',
+                    'email': 'divya.24bcy10061@vitbhopal.ac.in',
+                    'mobile': '8628896159'
+                },
+                {
+                    'name': 'Sounak Bera',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Male',
+                    'email': 'sounak.24bcy10012@vitbhopal.ac.in',
+                    'mobile': '8240308506'
+                },
+                {
+                    'name': 'Ashqua Islam',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Female',
+                    'email': 'ashqua.24bcy10345@vitbhopal.ac.in',
+                    'mobile': '6360007954'
+                },
+                {
+                    'name': 'Sakshya Patel',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Male',
+                    'email': 'sakshya.24bcy10027@vitbhopal.ac.in',
+                    'mobile': '9696053006'
+                },
+                {
+                    'name': 'Aditya Nayak',
+                    'year': '2nd/3rd',
+                    'department': 'VIT Bhopal/ Btech Computer Science (cyber security)',
+                    'city_state': 'Bhopal/MP',
+                    'gender': 'Male',
+                    'email': 'aditya.24bcy10283@vitbhopal.ac.in',
+                    'mobile': '9301359332'
+                },
+            ]
+            return jsonify({'success': True, 'data': contributors})
 
         # Admin endpoints for API keys (protected)
         @api.route('/admin/password')

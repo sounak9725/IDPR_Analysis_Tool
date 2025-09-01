@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Contributors - IPDR Analysis{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-users me-2"></i> Project Contributors
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">Developers who contributed to this project.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for c in contributors %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-1">{{ c.name }}</h5>
+                    <small class="text-muted">{{ c.year }} • {{ c.gender }}</small>
+                    <hr>
+                    <p class="mb-1"><strong>Department</strong><br>{{ c.department }}</p>
+                    <p class="mb-1"><strong>City/State</strong><br>{{ c.city_state }}</p>
+                    <p class="mb-1"><strong>Email</strong><br><a href="mailto:{{ c.email }}" class="text-decoration-underline">{{ c.email }}</a></p>
+                    <p class="mb-0"><strong>Mobile</strong><br><a href="tel:{{ c.mobile }}" class="text-decoration-underline">{{ c.mobile }}</a></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+
