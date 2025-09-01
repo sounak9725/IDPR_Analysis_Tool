@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Advanced Filtering System for IPDR Data
 Features:
@@ -114,16 +113,16 @@ class AdvancedFilteringSystem:
     def _load_noise_reduction_config(self) -> Dict:
         """Load noise reduction configuration"""
         return {
-            'duplicate_threshold': 0.95,  # 95% similarity for duplicates
+            'duplicate_threshold': 0.95,  
             'noise_patterns': [
                 'test', 'demo', 'sample', 'example',
                 '0000000000', '1111111111', '9999999999'
             ],
-            'min_duration_threshold': 1,  # Minimum call duration in seconds
-            'max_duration_threshold': 3600,  # Maximum call duration in seconds
+            'min_duration_threshold': 1,  
+            'max_duration_threshold': 3600,  
             'valid_service_types': ['VOICE', 'SMS', 'DATA', 'MMS'],
             'geographic_noise_filters': {
-                'max_distance_km': 1000,  # Maximum realistic distance
+                'max_distance_km': 1000,  
                 'exclude_private_ips': True,
                 'exclude_reserved_ips': True
             }
@@ -187,32 +186,29 @@ class AdvancedFilteringSystem:
             score = 0.0
             weights = self.relevance_weights
             
-            # Duration relevance
             if 'duration' in row and pd.notna(row['duration']):
                 duration_score = self._calculate_duration_score(row['duration'])
                 score += duration_score * weights['duration']
             
-            # Frequency relevance
             if context and 'entity_frequency' in context:
                 freq_score = self._calculate_frequency_score(context['entity_frequency'])
                 score += freq_score * weights['frequency']
             
-            # Timing relevance
             if 'timestamp' in row and pd.notna(row['timestamp']):
                 timing_score = self._calculate_timing_score(row['timestamp'])
                 score += timing_score * weights['timing']
             
-            # Geographic relevance
+            # geographic relevance in context
             if context and 'geographic_context' in context:
                 geo_score = self._calculate_geographic_score(context['geographic_context'])
                 score += geo_score * weights['geographic']
             
-            # Service type relevance
+            # service type relevance in the specific context
             if 'service_type' in row and pd.notna(row['service_type']):
                 service_score = self._calculate_service_score(row['service_type'])
                 score += service_score * weights['service_type']
             
-            # Risk score relevance
+            # risk score relevance calculation using the function
             if context and 'risk_score' in context:
                 risk_score = self._calculate_risk_score_relevance(context['risk_score'])
                 score += risk_score * weights['risk_score']
@@ -225,28 +221,28 @@ class AdvancedFilteringSystem:
     
     def _calculate_duration_score(self, duration: float) -> float:
         """Calculate relevance score based on call duration"""
-        if duration < 1:  # Very short calls
+        if duration < 1:  # very short calls
             return 0.3
-        elif duration < 30:  # Short calls
+        elif duration < 30:  # short calls
             return 0.6
-        elif duration < 300:  # Normal calls
+        elif duration < 300:  # normal calls
             return 1.0
-        elif duration < 1800:  # Long calls
+        elif duration < 1800:  # long calls
             return 0.8
-        else:  # Very long calls
+        else:  # very long calls
             return 0.4
     
     def _calculate_frequency_score(self, frequency: int) -> float:
         """Calculate relevance score based on entity frequency"""
-        if frequency == 1:  # Single communication
+        if frequency == 1:  # single communication
             return 0.5
-        elif frequency <= 5:  # Low frequency
+        elif frequency <= 5:  # low frequency
             return 0.7
-        elif frequency <= 20:  # Medium frequency
+        elif frequency <= 20:  # medium frequency
             return 1.0
-        elif frequency <= 100:  # High frequency
+        elif frequency <= 100:  # high frequency
             return 0.8
-        else:  # Very high frequency
+        else:  # very high frequency
             return 0.6
     
     def _calculate_timing_score(self, timestamp: Any) -> float:
@@ -259,20 +255,20 @@ class AdvancedFilteringSystem:
             
             hour = dt.hour
             weekday = dt.weekday()
-            
-            # Late night activity (suspicious)
+
+            # late night activity very suspicious
             if 22 <= hour or hour <= 6:
                 return 1.0
             
-            # Weekend activity
+            # weekend activity
             if weekday >= 5:
                 return 0.8
             
-            # Business hours
+            # business hours
             if 9 <= hour <= 17:
                 return 0.6
-            
-            # Regular hours
+
+            # regular hours
             return 0.7
             
         except Exception as e:
@@ -283,21 +279,21 @@ class AdvancedFilteringSystem:
         """Calculate relevance score based on geographic context"""
         score = 0.5  # Base score
         
-        # Distance-based scoring
+        # distance based scoring
         if 'distance_km' in geo_context:
             distance = geo_context['distance_km']
-            if distance > 1000:  # Long distance
+            if distance > 1000:  # long distance
                 score += 0.3
-            elif distance > 100:  # Medium distance
+            elif distance > 100:  # medium distance
                 score += 0.2
             else:  # Local
                 score += 0.1
         
-        # Cross-border communication
+        # cross-border communication
         if geo_context.get('cross_border', False):
             score += 0.2
         
-        # International communication
+        # international communication
         if geo_context.get('international', False):
             score += 0.3
         
@@ -306,12 +302,12 @@ class AdvancedFilteringSystem:
     def _calculate_service_score(self, service_type: str) -> float:
         """Calculate relevance score based on service type"""
         service_scores = {
-            'VOICE': 1.0,    # Most relevant for investigations
-            'SMS': 0.9,      # Very relevant
-            'MMS': 0.8,      # Relevant
-            'DATA': 0.6,     # Less relevant
-            'ROAMING': 0.7,  # Relevant for location tracking
-            'UNKNOWN': 0.5   # Neutral
+            'VOICE': 1.0,    # most relevant for investigations score
+            'SMS': 0.9,      # very relevant
+            'MMS': 0.8,      # relevant
+            'DATA': 0.6,     # less relevant
+            'ROAMING': 0.7,  # relevant for location tracking
+            'UNKNOWN': 0.5   # neutral score
         }
         return service_scores.get(service_type.upper(), 0.5)
     
@@ -343,15 +339,13 @@ class AdvancedFilteringSystem:
             if df.empty:
                 return df, df
             
-            # Calculate relevance scores
             df['relevance_score'] = df.apply(
                 lambda row: self.calculate_relevance_score(row, context), axis=1
             )
             
-            # Apply noise reduction
             df_clean = self._apply_noise_reduction(df)
             
-            # Apply active filters
+            # apply active filters
             filtered_data = df_clean.copy()
             filtered_out = pd.DataFrame()
             
@@ -363,7 +357,6 @@ class AdvancedFilteringSystem:
                     if not removed_data.empty:
                         filtered_out = pd.concat([filtered_out, removed_data], ignore_index=True)
             
-            # Sort by relevance score
             filtered_data = filtered_data.sort_values('relevance_score', ascending=False)
             
             self.logger.info(f"Filtering complete: {len(filtered_data)} records kept, {len(filtered_out)} filtered out")
@@ -380,26 +373,21 @@ class AdvancedFilteringSystem:
             df_clean = df.copy()
             config = self.noise_reduction_config
             
-            # Remove duplicates
             df_clean = self._remove_duplicates(df_clean, config['duplicate_threshold'])
             
-            # Filter by duration
             if 'duration' in df_clean.columns:
                 df_clean = df_clean[
                     (df_clean['duration'] >= config['min_duration_threshold']) &
                     (df_clean['duration'] <= config['max_duration_threshold'])
                 ]
             
-            # Filter by service type
             if 'service_type' in df_clean.columns:
                 df_clean = df_clean[
                     df_clean['service_type'].isin(config['valid_service_types'])
                 ]
             
-            # Remove noise patterns
             df_clean = self._remove_noise_patterns(df_clean, config['noise_patterns'])
             
-            # Apply geographic filters
             df_clean = self._apply_geographic_filters(df_clean, config['geographic_noise_filters'])
             
             return df_clean
@@ -411,7 +399,6 @@ class AdvancedFilteringSystem:
     def _remove_duplicates(self, df: pd.DataFrame, similarity_threshold: float) -> pd.DataFrame:
         """Remove duplicate records based on similarity threshold"""
         try:
-            # Simple duplicate removal based on key columns
             key_columns = ['a_party', 'b_party', 'timestamp', 'duration', 'service_type']
             available_columns = [col for col in key_columns if col in df.columns]
             
@@ -431,7 +418,7 @@ class AdvancedFilteringSystem:
             df_clean = df.copy()
             
             for pattern in noise_patterns:
-                # Check in a_party and b_party columns
+                # checking the a_party and b_party columns
                 for col in ['a_party', 'b_party']:
                     if col in df_clean.columns:
                         mask = df_clean[col].astype(str).str.contains(pattern, case=False, na=False)
@@ -448,13 +435,13 @@ class AdvancedFilteringSystem:
         try:
             df_clean = df.copy()
             
-            # This would typically involve IP geolocation analysis
-            # For now, we'll implement basic filters
+            # this would typically involve IP geolocation analysis
+    
             
             if geo_config.get('exclude_private_ips', False):
-                # Filter out private IP addresses
+                # filter out private IP addresses
                 if 'b_party' in df_clean.columns:
-                    # Simple private IP detection
+                    # simple private IP detection
                     private_ip_mask = df_clean['b_party'].astype(str).str.match(
                         r'^(10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)'
                     )
@@ -496,17 +483,17 @@ class AdvancedFilteringSystem:
             df_filtered = df.copy()
             df_removed = pd.DataFrame()
             
-            # Filter by risk score
+            # filter by risk score
             if 'min_risk_score' in criteria and 'relevance_score' in df.columns:
                 min_score = criteria['min_risk_score'] / 100.0  # Convert to 0-1 scale
                 mask = df_filtered['relevance_score'] >= min_score
                 df_removed = df_filtered[~mask]
                 df_filtered = df_filtered[mask]
             
-            # Filter by suspicious patterns
+            # filter by suspicious patterns
             if criteria.get('suspicious_patterns', False):
-                # This would involve more sophisticated pattern detection
-                # For now, we'll use relevance score as a proxy
+                # this would involve more sophisticated pattern detection
+                # for now we wll use relevance score as a proxy
                 pass
             
             return df_filtered, df_removed
@@ -522,11 +509,9 @@ class AdvancedFilteringSystem:
             df_filtered = df.copy()
             df_removed = pd.DataFrame()
             
-            # Filter by burner phone patterns
             if criteria.get('burner_phone_patterns', False):
-                # Simple burner phone detection
                 if 'b_party' in df.columns:
-                    # Check for repeated digits
+                    # check for repeated digits
                     def is_burner_pattern(value):
                         if pd.isna(value):
                             return False
@@ -553,11 +538,9 @@ class AdvancedFilteringSystem:
             df_filtered = df.copy()
             df_removed = pd.DataFrame()
             
-            # Filter by minimum connections
             if 'min_connections' in criteria:
                 min_conn = criteria['min_connections']
                 if 'a_party' in df.columns:
-                    # Count connections per party
                     party_counts = df_filtered['a_party'].value_counts()
                     parties_with_min_conn = party_counts[party_counts >= min_conn].index
                     mask = df_filtered['a_party'].isin(parties_with_min_conn)
@@ -578,11 +561,9 @@ class AdvancedFilteringSystem:
             df_removed = pd.DataFrame()
             
             if 'timestamp' in df.columns:
-                # Convert timestamp to datetime if needed
                 if df_filtered['timestamp'].dtype == 'object':
                     df_filtered['timestamp'] = pd.to_datetime(df_filtered['timestamp'], errors='coerce')
                 
-                # Filter by peak hours
                 if criteria.get('peak_hours', False):
                     df_filtered['hour'] = df_filtered['timestamp'].dt.hour
                     mask = (df_filtered['hour'] >= 9) & (df_filtered['hour'] <= 17)
@@ -603,7 +584,6 @@ class AdvancedFilteringSystem:
             df_filtered = df.copy()
             df_removed = pd.DataFrame()
             
-            # Apply custom criteria based on the filter configuration
             for column, condition in criteria.items():
                 if column in df.columns:
                     if isinstance(condition, dict):
@@ -636,7 +616,6 @@ class AdvancedFilteringSystem:
             kept_records = len(filtered_df)
             removed_records = len(filtered_out_df)
             
-            # Calculate statistics
             if 'relevance_score' in filtered_df.columns:
                 avg_relevance = filtered_df['relevance_score'].mean()
                 min_relevance = filtered_df['relevance_score'].min()
@@ -644,10 +623,8 @@ class AdvancedFilteringSystem:
             else:
                 avg_relevance = min_relevance = max_relevance = 0
             
-            # Filter effectiveness
             effectiveness = (kept_records / total_records) * 100 if total_records > 0 else 0
             
-            # Active filters summary
             active_filters = [f.name for f in self.filters if f.is_active]
             
             report = {
@@ -717,10 +694,8 @@ class AdvancedFilteringSystem:
             with open(filepath, 'r') as f:
                 config = json.load(f)
             
-            # Clear existing filters
             self.filters.clear()
             
-            # Load filters from configuration
             for filter_config in config.get('filters', []):
                 filter_criteria = FilterCriteria(
                     name=filter_config['name'],

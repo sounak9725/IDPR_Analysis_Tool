@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Enhanced B-Party Analysis Module
 Advanced analysis of B-party (recipient) information including:

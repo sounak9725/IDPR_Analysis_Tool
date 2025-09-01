@@ -58,8 +58,6 @@ class IPDRAnalyzer:
         records = []
         with open(file_path, 'r') as f:
             for line in f:
-                # Customize this based on your text format
-                # Example: "2024-01-15 10:30:15|919876543210|918765432109|120|VOICE"
                 parts = line.strip().split('|')
                 if len(parts) >= 5:
                     records.append({
@@ -89,8 +87,8 @@ class IPDRAnalyzer:
         for old_name, new_name in column_mapping.items():
             if old_name in self.data.columns:
                 self.data.rename(columns={old_name: new_name}, inplace=True)
-        
-        # Ensure timestamp is datetime
+
+        # timestamp is datetime
         if 'timestamp' in self.data.columns:
             self.data['timestamp'] = pd.to_datetime(self.data['timestamp'])
     
@@ -100,18 +98,18 @@ class IPDRAnalyzer:
             print("No data loaded. Please parse IPDR file first.")
             return
         
-        # Build network graph
+        # building network graph
         for _, row in self.data.iterrows():
             a_party = str(row['a_party'])
             b_party = str(row['b_party'])
             
-            # Add edge with communication metadata
+            # adding edge with communication metadata
             if self.network_graph.has_edge(a_party, b_party):
                 # Update existing edge
                 self.network_graph[a_party][b_party]['weight'] += 1
                 self.network_graph[a_party][b_party]['total_duration'] += row.get('duration', 0)
             else:
-                # Create new edge
+                # creating new edge
                 self.network_graph.add_edge(a_party, b_party, 
                                           weight=1, 
                                           total_duration=row.get('duration', 0),
@@ -165,7 +163,7 @@ class IPDRAnalyzer:
         """Analyze communication frequency patterns"""
         frequency_analysis = {}
         
-        # Group by A-party and B-party combinations
+        # group by A-party and B-party combinations
         pair_counts = self.data.groupby(['a_party', 'b_party']).size().reset_index(name='count')
         
         frequency_analysis['high_frequency_pairs'] = pair_counts[pair_counts['count'] > 10]
@@ -180,7 +178,6 @@ class IPDRAnalyzer:
         if self.data is None:
             return suspicious
         
-        # 1. Unusual time patterns (late night/early morning calls)
         if 'timestamp' in self.data.columns:
             late_night_calls = self.data[
                 (self.data['timestamp'].dt.hour >= 23) | 
@@ -195,11 +192,10 @@ class IPDRAnalyzer:
                     'details': late_night_calls[['a_party', 'b_party', 'timestamp']].head(10).to_dict('records')
                 })
         
-        # 2. Very short duration calls (potential signaling)
         if 'duration' in self.data.columns:
-            short_calls = self.data[self.data['duration'] <= 5]  # 5 seconds or less
+            short_calls = self.data[self.data['duration'] <= 5]  
             
-            if len(short_calls) > len(self.data) * 0.1:  # More than 10% are very short
+            if len(short_calls) > len(self.data) * 0.1:  
                 suspicious.append({
                     'type': 'short_duration_pattern',
                     'description': f'{len(short_calls)} very short communications (≤5 seconds)',
@@ -207,9 +203,8 @@ class IPDRAnalyzer:
                     'details': short_calls[['a_party', 'b_party', 'duration']].head(10).to_dict('records')
                 })
         
-        # 3. High frequency communications between specific pairs
         pair_counts = self.data.groupby(['a_party', 'b_party']).size().reset_index(name='count')
-        high_freq_pairs = pair_counts[pair_counts['count'] > 50]  # More than 50 communications
+        high_freq_pairs = pair_counts[pair_counts['count'] > 50] 
         
         if len(high_freq_pairs) > 0:
             suspicious.append({
@@ -219,7 +214,6 @@ class IPDRAnalyzer:
                 'details': high_freq_pairs.head(10).to_dict('records')
             })
         
-        # 4. Nodes with extremely high connectivity (potential hubs)
         node_degrees = dict(self.network_graph.degree())
         high_degree_nodes = {node: degree for node, degree in node_degrees.items() if degree > 20}
         
@@ -248,23 +242,21 @@ class IPDRAnalyzer:
             'time_range': None
         }
         
-        # Search as initiator (A-party)
         if entity_type in ['both', 'initiator']:
             as_initiator = self.data[self.data['a_party'] == entity_id]
             results['as_initiator'] = as_initiator.to_dict('records')
             results['communication_partners'].update(as_initiator['b_party'].tolist())
         
-        # Search as recipient (B-party)
         if entity_type in ['both', 'recipient']:
             as_recipient = self.data[self.data['b_party'] == entity_id]
             results['as_recipient'] = as_recipient.to_dict('records')
             results['communication_partners'].update(as_recipient['a_party'].tolist())
         
-        # Calculate totals
+        # calculate totals
         results['total_communications'] = len(results['as_initiator']) + len(results['as_recipient'])
         results['communication_partners'] = list(results['communication_partners'])
         
-        # Time range
+        # time range
         all_records = results['as_initiator'] + results['as_recipient']
         if all_records and 'timestamp' in self.data.columns:
             timestamps = [record.get('timestamp') for record in all_records if record.get('timestamp')]
@@ -281,7 +273,7 @@ class IPDRAnalyzer:
         try:
             import matplotlib.pyplot as plt
             
-            # Limit nodes for visualization
+            # limit nodes for visualization
             if self.network_graph.number_of_nodes() > max_nodes:
                 # Get top nodes by degree
                 top_nodes = sorted(self.network_graph.degree(), key=lambda x: x[1], reverse=True)[:max_nodes]
@@ -293,7 +285,7 @@ class IPDRAnalyzer:
             plt.figure(figsize=(12, 8))
             pos = nx.spring_layout(G, k=1, iterations=50)
             
-            # Draw network
+            # draw network
             nx.draw(G, pos, 
                    node_color='lightblue',
                    node_size=50,

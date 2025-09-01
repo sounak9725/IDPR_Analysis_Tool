@@ -170,94 +170,97 @@
             margin-top: 3rem;
         }
         
-        /* Ensure all text is white and visible */
         body, body * {
             color: var(--text-light) !important;
         }
         
-        /* Override any Bootstrap text colors */
         .text-muted, .text-secondary {
             color: var(--text-light) !important;
             opacity: 0.8;
         }
         
-        /* Ensure form elements have white text */
         input, textarea, select {
             color: var(--text-light) !important;
         }
         
-        /* Ensure table text is white */
+        .form-select option,
+        select option {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        
+        .form-select,
+        select {
+            color: var(--text-light) !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        .form-select:focus,
+        select:focus {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+            border-color: var(--secondary-color) !important;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+        }
+        
         table, th, td {
             color: var(--text-light) !important;
         }
         
-        /* Ensure list text is white */
         ul, ol, li {
             color: var(--text-light) !important;
         }
         
-        /* Ensure paragraph text is white */
         p {
             color: var(--text-light) !important;
         }
         
-        /* Ensure heading text is white */
         h1, h2, h3, h4, h5, h6 {
             color: var(--text-light) !important;
         }
         
-        /* Ensure label text is white */
         label {
             color: var(--text-light) !important;
         }
         
-        /* Ensure small text is white */
         small {
             color: var(--text-light) !important;
             opacity: 0.8;
         }
         
-        /* Ensure span text is white */
         span {
             color: var(--text-light) !important;
         }
         
-        /* Ensure div text is white */
         div {
             color: var(--text-light) !important;
         }
         
-        /* Override all Chart.js text colors to white */
         canvas {
             color: var(--text-light) !important;
         }
         
-        /* Ensure all chart text elements are white */
         .chartjs-chart * {
             color: var(--text-light) !important;
         }
         
-        /* Override any remaining Bootstrap or default text colors */
         .text-dark, .text-body {
             color: var(--text-light) !important;
         }
         
-        /* Ensure form labels and inputs are white */
-        .form-label, .form-control, .form-select {
+        .form-label, .form-control {
             color: var(--text-light) !important;
         }
         
-        /* Ensure table text is white */
         .table, .table th, .table td {
             color: var(--text-light) !important;
         }
         
-        /* Ensure modal text is white */
         .modal-title, .modal-body, .modal-footer {
             color: var(--text-light) !important;
         }
         
-        /* Override modal text colors for better visibility */
         .modal-content {
             color: #000000 !important;
         }
@@ -275,7 +278,6 @@
             color: #000000 !important;
         }
         
-        /* Ensure modal buttons have proper text color */
         .modal-content .btn {
             color: inherit !important;
         }
@@ -288,7 +290,6 @@
             color: #ffffff !important;
         }
         
-        /* Additional modal styling for better visibility */
         .modal-header,
         .modal-body,
         .modal-footer {
@@ -299,7 +300,6 @@
             color: #000000 !important;
         }
         
-        /* Ensure form elements in modals are readable */
         .modal .form-control::placeholder {
             color: #6c757d !important;
         }
@@ -308,12 +308,10 @@
             color: #000000 !important;
         }
         
-        /* Override any conflicting Bootstrap modal styles */
         .modal.show .modal-dialog {
             color: #000000 !important;
         }
         
-        /* Use dark text for alerts to ensure readability on light alert backgrounds */
         .alert {
             color: #000000 !important;
         }
@@ -327,38 +325,30 @@
         .alert .suspicious-medium,
         .alert .suspicious-low { color: #000000 !important; }
         
-        /* Ensure badge text is white */
         .badge {
             color: var(--text-light) !important;
         }
         
-        /* Network controls specific styling for better visibility */
-        .network-controls,
-        .network-controls *,
         .network-controls label,
         .network-controls .form-label {
             color: #ffffff !important;
         }
         
-        /* Network form controls with white backgrounds */
         .network-controls .form-control,
         .network-controls .form-select,
         .network-controls input,
         .network-controls select {
             color: #000000 !important;
             background-color: #ffffff !important;
+            border: 1px solid #ced4da !important;
         }
         
-        /* Network control labels and text */
-        .network-controls h5,
-        .network-controls h6,
-        .network-controls p,
-        .network-controls span,
-        .network-controls div {
+        .network-controls .form-select option,
+        .network-controls select option {
             color: #000000 !important;
+            background-color: #ffffff !important;
         }
         
-        /* Explicit exceptions for light UI controls (dataset selector) */
         .dataset-select,
         .dataset-select *,
         .dataset-select option {
@@ -366,25 +356,42 @@
             background-color: #ffffff !important;
         }
 
-        /* Network statistics cards - keep white text on dark background */
         .network-stats .stat-card,
         .network-stats .stat-number,
         .network-stats .stat-label {
             color: var(--text-light) !important;
         }
         
-        /* Override for any network-related form elements */
-        .network-page .form-control,
-        .network-page .form-select,
-        .network-page input,
-        .network-page select {
+        #filter-type,
+        #filter-priority,
+        #maxNodes,
+        #layoutType,
+        #nodeSize {
+            color: #000000 !important;
+            background-color: #ffffff !important;
+            border: 1px solid #ced4da !important;
+        }
+        
+        #filter-type option,
+        #filter-priority option,
+        #maxNodes option,
+        #layoutType option,
+        #nodeSize option {
             color: #000000 !important;
             background-color: #ffffff !important;
         }
         
-        .network-page label,
-        .network-page .form-label {
+        .form-select:focus,
+        select:focus,
+        #filter-type:focus,
+        #filter-priority:focus,
+        #maxNodes:focus,
+        #layoutType:focus,
+        #nodeSize:focus {
             color: #000000 !important;
+            background-color: #ffffff !important;
+            border-color: var(--secondary-color) !important;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
         }
     </style>
     
@@ -479,7 +486,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     
     <script>
-        // Global utility functions
         function showLoading() {
             document.querySelector('.loading').style.display = 'block';
         }
@@ -497,7 +503,7 @@
             `;
             document.querySelector('main').insertBefore(alertDiv, document.querySelector('main').firstChild);
             
-            // Auto-dismiss after 5 seconds
+            // auto dismissing after 5 seconds
             setTimeout(() => {
                 if (alertDiv.parentNode) {
                     alertDiv.remove();
@@ -515,7 +521,7 @@
             return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
         }
         
-        // Global Chart.js configuration to ensure white text
+        // global Chart.js configuration to ensure white text
         if (typeof Chart !== 'undefined') {
             Chart.defaults.color = '#ffffff';
             Chart.defaults.plugins.legend.labels.color = '#ffffff';

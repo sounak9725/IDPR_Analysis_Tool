@@ -1,8 +1,3 @@
-"""
-Production startup script for IPDR Analysis Web Dashboard
-Includes proper logging, process management, and configuration
-"""
-
 import os
 import sys
 import logging
@@ -69,12 +64,12 @@ def start_production_server():
         
         app.config.from_object(config)
         
-        logger.info("🚀 Starting IPDR Analysis Web Dashboard (Production Mode)")
-        logger.info(f"📊 Dashboard will be available at: http://{config.HOST}:{config.PORT}")
-        logger.info(f"🔧 Environment: {os.environ.get('FLASK_ENV', 'production')}")
-        logger.info(f"📁 Data directory: {config.DATA_DIR}")
-        logger.info(f"📁 Output directory: {config.OUTPUT_DIR}")
-        logger.info("⏹️  Press Ctrl+C to stop the server")
+        logger.info(" Starting IPDR Analysis Web Dashboard (Production Mode)")
+        logger.info(f"Dashboard will be available at: http://{config.HOST}:{config.PORT}")
+        logger.info(f" Environment: {os.environ.get('FLASK_ENV', 'production')}")
+        logger.info(f" Data directory: {config.DATA_DIR}")
+        logger.info(f"Output directory: {config.OUTPUT_DIR}")
+        logger.info("Press Ctrl+C to stop the server")
         logger.info("-" * 50)
         
         socketio.run(
@@ -86,13 +81,13 @@ def start_production_server():
         )
         
     except Exception as e:
-        logger.error(f"❌ Error starting production server: {e}")
+        logger.error(f" Error starting production server: {e}")
         return False
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully"""
     logger = logging.getLogger(__name__)
-    logger.info("🛑 Received shutdown signal, shutting down gracefully...")
+    logger.info(" Received shutdown signal, shutting down gracefully...")
     
     time.sleep(1)
     sys.exit(0)
@@ -101,18 +96,18 @@ def main():
     """Main production startup function"""
     logger = setup_logging()
     
-    logger.info("🌐 IPDR Analysis Web Dashboard - Production Startup")
+    logger.info(" IPDR Analysis Web Dashboard - Production Startup")
     logger.info("=" * 60)
     
     if not check_environment():
-        logger.error("❌ Environment check failed")
+        logger.error(" Environment check failed")
         sys.exit(1)
     
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
     if not start_production_server():
-        logger.error("❌ Failed to start production server")
+        logger.error(" Failed to start production server")
         sys.exit(1)
 
 if __name__ == "__main__":

@@ -10,10 +10,10 @@ def test_imports():
     try:
         print("Testing imports...")
         from src.web.app import create_app
-        print("✓ App imports successful")
+        print(" App imports successful")
         return True
     except Exception as e:
-        print(f"✗ Import failed: {e}")
+        print(f" Import failed: {e}")
         return False
 
 def test_app_creation():
@@ -22,10 +22,10 @@ def test_app_creation():
         print("Testing app creation...")
         from src.web.app import create_app
         app, socketio = create_app()
-        print("✓ App creation successful")
+        print("App creation successful")
         return True
     except Exception as e:
-        print(f"✗ App creation failed: {e}")
+        print(f"App creation failed: {e}")
         return False
 
 def test_port_config():
@@ -33,10 +33,10 @@ def test_port_config():
     try:
         print("Testing port configuration...")
         port = int(os.environ.get('PORT', 5000))
-        print(f"✓ Port configuration: {port}")
+        print(f" Port configuration: {port}")
         return True
     except Exception as e:
-        print(f"✗ Port configuration failed: {e}")
+        print(f" Port configuration failed: {e}")
         return False
 
 def main():
@@ -60,10 +60,10 @@ def main():
     print(f"Tests passed: {passed}/{total}")
     
     if passed == total:
-        print("✓ All tests passed - app should start successfully")
+        print(" All tests passed - app should start successfully")
         return 0
     else:
-        print("✗ Some tests failed - check the errors above")
+        print(" Some tests failed - check the errors above")
         return 1
 
 if __name__ == '__main__':

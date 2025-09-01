@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Case Management System for IPDR Investigations
 Features:

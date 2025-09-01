@@ -20,20 +20,20 @@ class SyntheticIPDRGenerator:
     def generate_entities(self, num_phones=200, num_ips=100):
         """Generate realistic phone numbers and IP addresses"""
         
-        # Generate Indian mobile numbers (realistic format)
+        # generate Indian mobile numbers 
         indian_prefixes = ['91987', '91988', '91989', '91990', '91991', '91992', '91993', '91994', '91995', '91996', '91997', '91998', '91999']
         for _ in range(num_phones):
             prefix = random.choice(indian_prefixes)
             suffix = ''.join([str(random.randint(0, 9)) for _ in range(5)])
             self.phone_numbers.append(prefix + suffix)
-        
-        # Generate IP addresses (various ranges)
+
+        # generate IP addresses a different range
         ip_ranges = [
             '192.168.{}.{}',
             '10.0.{}.{}',
             '172.16.{}.{}',
-            '203.{}.{}.{}',  # Public IPs
-            '117.{}.{}.{}',  # Indian ISP range
+            '203.{}.{}.{}',  # public IPs
+            '117.{}.{}.{}',  # indian ISP range by doing some research
         ]
         
         for _ in range(num_ips):
@@ -51,12 +51,12 @@ class SyntheticIPDRGenerator:
                 )
             self.ip_addresses.append(ip)
         
-        # Generate IMEI numbers
+        # generate IMEI numbers
         for _ in range(num_phones):
             imei = ''.join([str(random.randint(0, 9)) for _ in range(15)])
             self.imei_numbers.append(imei)
-        
-        # Generate cell tower information
+
+        # generate cell tower information
         for i in range(50):
             tower = {
                 'tower_id': f'TOWER_{i+1:03d}',
@@ -69,16 +69,12 @@ class SyntheticIPDRGenerator:
     def create_suspicious_patterns(self):
         """Define entities that will exhibit suspicious behavior"""
         
-        # Criminal network (highly connected nodes)
         criminal_network = random.sample(self.phone_numbers, 10)
         
-        # Burner phone patterns (short-lived, high activity)
         burner_phones = random.sample(self.phone_numbers, 5)
         
-        # Drug dealer pattern (many short calls)
         drug_dealers = random.sample(self.phone_numbers, 3)
         
-        # Bot network (IP addresses with automated patterns)
         bot_network = random.sample(self.ip_addresses, 8)
         
         self.suspicious_entities = {
@@ -102,15 +98,12 @@ class SyntheticIPDRGenerator:
         base_date = datetime.now() - timedelta(days=days_span)
         
         for i in range(num_records):
-            # Determine if this should be a suspicious record
-            is_suspicious = random.random() < 0.15  # 15% suspicious records
+            is_suspicious = random.random() < 0.15  
             
-            # Generate timestamp
+            # generate timestamp
             if is_suspicious:
-                # Suspicious calls more likely at unusual hours
                 hour = random.choice([1, 2, 3, 23, 0] * 3 + list(range(24)))
             else:
-                # Normal distribution of calls throughout the day
                 hour = np.random.choice(24, p=self._get_hourly_distribution())
             
             timestamp = base_date + timedelta(
@@ -120,14 +113,14 @@ class SyntheticIPDRGenerator:
                 seconds=random.randint(0, 59)
             )
             
-            # Select A-party and B-party
+            # select A-party and B-party
             a_party, b_party, service_type = self._select_parties(is_suspicious)
             
-            # Generate call/session details
+            # generate call/session details
             duration = self._generate_duration(is_suspicious, service_type)
             data_volume = self._generate_data_volume(service_type, duration)
             
-            # Generate location info
+            # generate location info
             tower = random.choice(self.cell_towers)
             
             record = {
@@ -436,20 +429,18 @@ def create_comprehensive_dataset():
         json.dump(summary, f, indent=2, default=str)
     
     print(f"\nDataset Generation Complete!")
-    print(f"✓ Main dataset: {len(records)} records")
-    print(f"✓ Unique entities: {df['a_party'].nunique() + df['b_party'].nunique()}")
-    print(f"✓ Case studies: {len(case_studies)}")
-    print(f"✓ Suspicious patterns included: Drug trafficking, terrorism, botnets, fraud")
+    print(f"Main dataset: {len(records)} records")
+    print(f"Unique entities: {df['a_party'].nunique() + df['b_party'].nunique()}")
+    print(f"Case studies: {len(case_studies)}")
+    print(f"Suspicious patterns included: Drug trafficking, terrorism, botnets, fraud")
     
     return records, case_studies
 
 if __name__ == "__main__":
-    # Install faker if not already installed
     try:
         from faker import Faker
     except ImportError:
-        print("Please install faker: pip install faker")
+        print("faker not installed first install it")
         exit(1)
     
-    # Generate comprehensive dataset
     create_comprehensive_dataset()
