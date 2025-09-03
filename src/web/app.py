@@ -374,28 +374,34 @@ class IPDRDashboard:
                         (self.analyzer.data['b_party'] == query)
                     ]
                     
-                    # top partners
-                    if entity_data['a_party'].iloc[0] == query:
-                        partners = entity_data['b_party'].value_counts().head(5)
+                    # check if entity_data is not empty before processing
+                    if not entity_data.empty:
+                        # top partners
+                        if entity_data['a_party'].iloc[0] == query:
+                            partners = entity_data['b_party'].value_counts().head(5)
+                        else:
+                            partners = entity_data['a_party'].value_counts().head(5)
+                        
+                        enhanced_results['top_partners'] = [
+                            {'entity': partner, 'count': count} 
+                            for partner, count in partners.items()
+                        ]
+                        
+                        # recent activity
+                        recent = entity_data.sort_values('timestamp', ascending=False).head(5)
+                        enhanced_results['recent_activity'] = [
+                            {
+                                'timestamp': str(row['timestamp']),
+                                'partner': row['b_party'] if row['a_party'] == query else row['a_party'],
+                                'duration': row.get('duration', 0),
+                                'service_type': row.get('service_type', 'Unknown')
+                            }
+                            for _, row in recent.iterrows()
+                        ]
                     else:
-                        partners = entity_data['a_party'].value_counts().head(5)
-                    
-                    enhanced_results['top_partners'] = [
-                        {'entity': partner, 'count': count} 
-                        for partner, count in partners.items()
-                    ]
-                    
-                    # recent activity
-                    recent = entity_data.sort_values('timestamp', ascending=False).head(5)
-                    enhanced_results['recent_activity'] = [
-                        {
-                            'timestamp': str(row['timestamp']),
-                            'partner': row['b_party'] if row['a_party'] == query else row['a_party'],
-                            'duration': row.get('duration', 0),
-                            'service_type': row.get('service_type', 'Unknown')
-                        }
-                        for _, row in recent.iterrows()
-                    ]
+                        # handle case when no data is found for the entity
+                        enhanced_results['top_partners'] = []
+                        enhanced_results['recent_activity'] = []
                 
                 return jsonify(enhanced_results)
             except Exception as e:
